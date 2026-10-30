@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daywork</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--card:#fff;--ink:#14171f;--mute:#7b8190;--line:#ececf2;--pri:#3b5bfd;--pri-soft:#f1f3ff;--ok:#12803f;--ok-soft:#e8f7ee;--warn:#a85a00;--warn-soft:#fff5e5;--bad:#c2312b;--bad-soft:#fdeceb;--field:#fafbff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai","Sarabun",system-ui,sans-serif;font-size:15px;line-height:1.5}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding:16px 14px 92px}
+h1,h2,h3,p{margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{font-weight:700;font-size:22px;letter-spacing:.14em;color:var(--pri)}
+.bal{font:inherit;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:13px;color:var(--mute)}
+.hero{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:0 6px 24px rgba(30,40,90,.07);border-radius:24px;padding:22px 18px;margin-bottom:14px;text-align:center}
+.hero .big{font-size:38px;font-weight:700;line-height:1.2}
+.hero small{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);box-shadow:0 2px 10px rgba(30,40,90,.04);border-radius:18px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.chip.on{background:var(--pri-soft);border-color:var(--pri);color:var(--pri);font-weight:500}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;font-weight:500}
+.t-ok{background:var(--ok-soft);color:var(--ok)}.t-warn{background:var(--warn-soft);color:var(--warn)}.t-pri{background:var(--pri-soft);color:var(--pri)}.t-bad{background:var(--bad-soft);color:var(--bad)}
+.btn{background:var(--pri);color:#fff;border:1px solid var(--pri);border-radius:999px;padding:8px 16px;font:inherit;font-weight:500;cursor:pointer}
+.btn.ghost{background:var(--card);color:var(--pri);border:1px solid var(--pri)}
+.btn.sm{padding:4px 12px;font-size:13px}
+.btn:focus-visible,.chip:focus-visible,.nav button:focus-visible,.cell:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.mute{color:var(--mute);font-size:13px}
+.pay{font-weight:700;color:var(--ok)}
+h2{font-size:17px;margin:6px 0 8px}
+.job h3{font-size:16px}
+.job .meta{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+.sched{display:grid;grid-template-columns:44px repeat(4,1fr);gap:5px;font-size:12px;text-align:center}
+.cell{border:2px solid var(--ok);border-radius:10px;padding:7px 0;font:inherit;font-size:11px;cursor:pointer;background:var(--ok-soft);color:var(--ok);display:flex;flex-direction:column;align-items:center;gap:2px}
+.cell.busy{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.sched .h{color:var(--mute);align-self:center}
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:8px}
+.bars div{flex:1;text-align:center;font-size:11px;color:var(--mute);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.bars i{display:block;background:var(--pri);border-radius:6px 6px 0 0;min-height:3px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stats .card{margin:0}
+.stats b{font-size:20px;display:block}
+.prog{height:10px;background:var(--pri-soft);border-radius:6px;overflow:hidden;margin:8px 0 4px}
+.prog i{display:block;height:100%;background:var(--ok)}
+input,select{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+form.add{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+form.add .full{grid-column:1/-1}
+.item{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav div{display:flex;width:100%;max-width:480px}
+.nav button{flex:1;border:0;background:none;color:var(--mute);font:inherit;font-size:11px;padding:8px 0 6px;cursor:pointer}.nav button{min-width:0;overflow-wrap:anywhere}
+.nav button.on{color:var(--pri);font-weight:700}
+.nav svg{display:block;margin:0 auto 2px}
+#toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+.why{background:var(--pri-soft);border-radius:12px;padding:8px 12px;margin:8px 0;font-size:13px}.why ul{margin:4px 0 0;padding-left:18px;color:var(--mute)}.panel{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}:root[data-theme="dark"]{--bg:#0e1322;--card:#161c30;--ink:#eef1fb;--mute:#9aa3bd;--line:#273050;--ok:#4cd08a;--ok-soft:#12331f;--warn:#ffb55c;--warn-soft:#3a2a10;--bad:#ff8a84;--bad-soft:#3d1a19;--field:#1b2340}
+.bal:focus-visible,.sw:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.sw{width:34px;height:34px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.sw.on{box-shadow:0 0 0 3px var(--ink)}
+:root[data-cb="1"]{--ok:#00588f;--ok-soft:#dbeeff;--bad:#a63d00;--bad-soft:#ffe9d9;--warn:#6b5500;--warn-soft:#fff3bf}
+:root[data-theme="dark"][data-cb="1"]{--ok:#56b4e9;--ok-soft:#10304a;--bad:#ffa45c;--bad-soft:#4a2410;--warn:#f0e442;--warn-soft:#3d3a0c}
+:root[data-cb="1"] .t-ok::before{content:"✓ "}:root[data-cb="1"] .t-bad::before{content:"✕ "}:root[data-cb="1"] .t-warn::before{content:"! "}
+.themebtn{width:46px;height:46px;border-radius:50%;background:var(--pri);color:#fff;border:0;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 14px rgba(20,30,80,.28);position:relative;flex:none}
+.themebtn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.themebtn.pulse::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--pri);animation:ring 1.8s ease-out infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){.themebtn.pulse::after{animation:none}}
+.hint{background:var(--pri-soft);border:1px solid var(--pri);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.steps{display:flex;gap:8px;margin:10px 0}.stp{flex:1;text-align:center;font-size:12px;color:var(--mute);border-top:4px solid var(--line);padding-top:6px}.stp span{display:block;font-size:16px;font-weight:700}.stp.done{border-color:var(--ok);color:var(--ok);font-weight:500}
+.ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;flex:none}
+.hero2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.hero2>div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px}
+.hero2 b{font-size:17px}
+.hero2>div:nth-child(2){background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.kv{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0;align-items:center}
+.kv.big{font-size:17px;font-weight:700}
+.ibtn{border:1px solid var(--line);background:var(--card);color:var(--mute);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:none}
+.ibtn.on{color:var(--bad);border-color:var(--bad)}
+.ibtn:focus-visible,.btn:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.okc{color:var(--ok)}.badc{color:var(--bad)}
+.acts{gap:8px;flex-wrap:nowrap;margin-top:8px}
+.acts .grow{flex:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.plan{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.pi{display:flex;gap:10px;align-items:center;background:var(--pri-soft);border-radius:14px;padding:10px}
+.pi b{display:block;font-size:18px}
+.lab{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-top:8px;color:var(--mute)}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stats3 .card{margin:0;text-align:center;padding:10px 4px}
+.stats3 b{display:block;font-size:17px}
+.eic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none}
+.eic.in{background:var(--ok-soft);color:var(--ok)}.eic.out{background:var(--bad-soft);color:var(--bad)}
+.item .grow{flex:1}
+.item{align-items:center}
+details.why{margin:6px 0;font-size:13px}details.why summary{cursor:pointer;color:var(--mute)}details.why ul{margin:6px 0 0;padding-left:18px;color:var(--mute)}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.stp3{border:1px solid var(--line);background:var(--pri-soft);color:var(--pri);border-radius:14px;padding:10px 4px;font:inherit;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}.stp3 span{font-weight:700}
+.flow{display:flex;align-items:stretch;gap:4px;margin:12px 0}.flow>div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px}.flow b{font-size:16px}.flow>i{align-self:center;color:var(--mute);display:flex}
+.menuitem{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;font:inherit;color:var(--ink);cursor:pointer}.menuitem>span:nth-child(2){flex:1;display:flex;flex-direction:column}.menuitem:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.vh{position:absolute;opacity:0;width:1px;height:1px}.vh:focus-visible+label{outline:3px solid var(--pri);outline-offset:2px}
+.den{display:grid;grid-template-columns:24px 1fr auto 70px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.den .ibtn{width:34px;height:34px}.den .n{min-width:22px;text-align:center;font-weight:700}
+.srcs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.srcb{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 6px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px}
+.srcb.on{border-color:var(--pri);background:var(--pri-soft);color:var(--pri);font-weight:700}.srcb:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.ico{position:relative;border:2px solid var(--line);border-radius:12px;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.ico input{position:absolute;opacity:0;inset:0;cursor:pointer}.ico:has(input:checked){border-color:var(--pri);background:var(--pri-soft);color:var(--pri)}.ico:has(input:focus-visible){outline:3px solid var(--pri);outline-offset:2px}
+.menu4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.mi{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 2px;font:inherit;font-size:12px;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}.mi.on{border-color:var(--pri);background:var(--pri-soft);color:var(--pri);font-weight:700}.mi:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.hide{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h12v4"/><path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H5"/><path d="M16 14h.01"/></symbol>
+<symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 21l5-3 5 3-1.5-7"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6v2m0 8v2"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M19 19v2H6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M3 7l6 6 4-4 8 8M15 17h6v-6"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="i-stack" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-xc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.5 6.1 20.8l1.3-6.5L2.5 9.8l6.6-.8L12 3z"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11a3 3 0 1 0 0-6M17 14c2.8.4 4 2.7 4 6"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3L12 4z"/><path d="M12 10v4M12 17h.01"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 1.6-2.2-.4-1.2.3-2.3 1.6-2.3H17a4 4 0 0 0 4-4c0-5-4-9.5-9-9.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="4"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/></symbol>
+<symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 21v-4M16 21v-4M7.5 14h.01M16.5 14h.01"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8zM9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4"/></symbol>
+<symbol id="i-cap" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5L2 9zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></symbol>
+</defs></svg>
+<div id="app">
+  <div class="top"><span class="logo">Daywork</span><span class="row" style="gap:6px"><span class="bal" id="balTop" style="cursor:default"></span></span></div>
+  <div id="themeSlot"></div>
+  <main id="main"></main>
+</div>
+<div id="toast" role="status"></div>
+<nav class="nav" aria-label="เมนูหลัก"><div id="nav"></div></nav>
+
+<script>
+const DAYS=['จ.','อ.','พ.','พฤ.','ศ.','ส.','อา.'];
+const SLOTS=['เช้า','บ่าย','เย็น','ค่ำ'];
+const SLOT_H=[4,4,4,3];
+const ALL_SKILLS=['ตัดคลิป','ทำสไลด์','ออกแบบ','ถ่ายภาพ','เขียนบทความ','ติวหนังสือ','ช่วยงานกิจกรรม'];
+const fmt=n=>Number(n).toLocaleString('th-TH');
+const state={
+  tab:'ledger',lsec:null,pk:{create:false,id:null,act:null},pockets:[{id:1,name:'ค่าเทอม',type:'wishlist',icon:'book',goal:3000,weeks:8,step:50,streak:0,bal:500,locked:true,members:[],auto:10},{id:2,name:'เงินฉุกเฉิน',type:'saving',icon:'shield',goal:1000,weeks:8,step:50,streak:3,bal:200,locked:false,members:[],auto:0},{id:3,name:'ค่าใช้จ่ายรายสัปดาห์',type:'classic',icon:'wallet',goal:0,weeks:1,step:50,streak:0,bal:300,locked:false,members:[],auto:0}],scan:{open:false,st:'idle',img:null,counts:{},src:null,err:''},weekGoal:3000,role:'student',postOpen:false,joined:false,liked:new Set(),alerts:[{t:'โพสต์ไลค์ แชร์ รายได้เดือนละ 30,000',n:12},{t:'พิมพ์เอกสารที่บ้าน รายได้สูงมาก',n:8}],posts:[{id:1,a:'พี่ส้ม',c:'เคล็ดลับ',t:'ตัดคลิป 2 ชม. ได้ 600 ฿ เก็บค่าเทอมได้ไว',l:24},{id:2,a:'น้องบีม',c:'ถามตอบ',t:'งานแพ็คของช่วงเย็นมีใครเคยทำบ้าง?',l:9},{id:3,a:'คุณแม่ปลา',c:'รีวิวงาน',t:'ขายของตลาดนัดเสาร์-อาทิตย์ ได้เงินสด ผู้ว่าจ้างใจดี',l:31},{id:4,a:'พี่โอม',c:'หาเพื่อนทำงาน',t:'หาเพื่อนไปช่วยงานรับน้อง วันเสาร์ 2 คน',l:6}],day:(new Date().getDay()+6)%7,budget:4500,period:'week',
+  skills:{'ตัดคลิป':2,'ทำสไลด์':2},hist:{},portfolio:[{s:'ตัดคลิป',t:'คลิปรีวิวคาเฟ่ 30 วินาที'}],hidden:new Set(),askill:'ทำสไลด์',method:'quiz',assessOpen:false,qans:{},evid:{},avoid:new Set(),rated:new Set(),open:null,
+  busy:DAYS.map((_,d)=>SLOTS.map((_,s)=>d<5&&s<2)),
+  reported:new Set(),applied:new Set(),
+  goal:9000,
+  income:[
+    {d:0,t:'in',n:'ตัดคลิปรีวิวร้านกาแฟ',a:600,h:3,cat:'part',src:'in'},
+    {d:1,t:'in',n:'ทำสไลด์ให้รุ่นพี่',a:350,h:2,cat:'part',src:'in'},
+    {d:1,t:'out',n:'ค่าอาหาร',a:180,h:0,cat:'food'},
+    {d:2,t:'out',n:'ชานมไข่มุกกับเพื่อน',a:85,h:0,cat:'food',need:0},
+    {d:3,t:'in',n:'ช่วยงานกิจกรรมคณะ',a:400,h:4,cat:'part',src:'in'},
+    {d:4,t:'out',n:'ค่าเดินทาง',a:120,h:0,cat:'transport'},
+    {d:5,t:'in',n:'ติวคณิต ม.ปลาย',a:500,h:2,cat:'part',src:'in'},
+    {d:5,t:'out',n:'ดูหนังกับเพื่อน',a:280,h:0,cat:'fun'},
+    {d:6,t:'in',n:'ตัดคลิปสั้น',a:450,h:3,cat:'part',src:'in'},
+    {d:8,t:'out',n:'ซื้อเสื้อ',a:350,h:0,cat:'shopping'},
+    {d:9,t:'in',n:'ออกแบบโปสเตอร์',a:900,h:5,cat:'part',src:'in'},
+    {d:9,t:'out',n:'ค่าอุปกรณ์การเรียน',a:400,h:0,cat:'study'},
+    {d:12,t:'in',n:'เงินจากครอบครัว',a:2500,h:0,cat:'fam',src:'out'},
+    {d:13,t:'in',n:'กยศ.',a:1500,h:0,cat:'loan',src:'out'},
+    {d:15,t:'in',n:'ทำสไลด์นำเสนอ',a:700,h:4,cat:'part',src:'in'},
+    {d:20,t:'out',n:'ค่าหอพัก',a:2500,h:0,cat:'housing'}
+  ],
+};
+const LV=['ยังไม่มี','เพิ่งเริ่ม','พอทำได้','ชำนาญ'];
+const JOBS=[
+  {id:1,t:'ตัดคลิปสั้นสำหรับร้านคาเฟ่',emp:'Brew Bar',skill:'ตัดคลิป',lvl:2,hrs:2,pay:600,rate:4.8,rev:42,ver:true,slot:2,note:'ส่งงานภายใน 2 ชั่วโมง'},
+  {id:2,t:'ทำสไลด์นำเสนอ 10 หน้า',emp:'พี่ฝน (ปี 4 บริหาร)',skill:'ทำสไลด์',lvl:2,hrs:2,pay:350,rate:4.6,rev:19,ver:true,slot:1,note:'มีเทมเพลตให้'},
+  {id:3,t:'ช่วยงานรับน้องคณะวิศวะ',emp:'ชมรมกิจกรรมคณะ',skill:'ช่วยงานกิจกรรม',lvl:1,hrs:4,pay:400,rate:4.7,rev:31,ver:true,slot:2,note:'18:00–22:00 ในมหาวิทยาลัย'},
+  {id:4,t:'ออกแบบโปสเตอร์ร้านขนม',emp:'Sweet Corner',skill:'ออกแบบ',lvl:3,hrs:3,pay:700,rate:4.4,rev:12,ver:true,slot:3,note:'แก้ไขได้ 2 รอบ'},
+  {id:6,t:'ทดลองงาน: ถ่ายรูปสินค้า 5 ชิ้น',emp:'Sweet Corner',skill:'ถ่ายภาพ',lvl:2,hrs:1,pay:150,rate:4.5,rev:8,ver:true,slot:1,trial:true,note:'งานทดลองสั้น ๆ สำหรับคนที่ยังไม่มีประวัติ'},
+  {id:5,t:'พิมพ์เอกสารที่บ้าน รายได้สูงมาก',emp:'ไม่ระบุตัวตน',skill:'เขียนบทความ',lvl:1,hrs:1,pay:3000,rate:0,rev:0,ver:false,slot:3,note:'ต้องโอนค่ามัดจำก่อนเริ่มงาน'},
+  {id:7,t:'ตัดคลิปรีวิวสินค้าลง TikTok',emp:'ShopNow',skill:'ตัดคลิป',lvl:2,hrs:2,pay:450,rate:4.5,rev:27,ver:true,slot:3,note:'คลิปแนวตั้ง 30–45 วินาที'},
+  {id:8,t:'ทดลองงาน: ตัดคลิป 15 วินาที',emp:'ClipLab',skill:'ตัดคลิป',lvl:2,hrs:1,pay:120,rate:4.4,rev:16,ver:true,slot:2,trial:true,note:'งานทดลองสั้น ๆ สำหรับคนที่ยังไม่มีประวัติ'},
+  {id:9,t:'ทำสไลด์สรุปรายงานกลุ่ม',emp:'น้องปี 2 คณะบัญชี',skill:'ทำสไลด์',lvl:1,hrs:2,pay:300,rate:4.4,rev:9,ver:true,slot:3,note:'8 หน้า มีเนื้อหาให้แล้ว'},
+  {id:10,t:'ออกแบบโลโก้ร้านเสื้อผ้ามือสอง',emp:'Thrift Corner',skill:'ออกแบบ',lvl:3,hrs:3,pay:800,rate:4.6,rev:15,ver:true,slot:3,note:'ส่งไฟล์ PNG และ SVG'},
+  {id:11,t:'ทดลองงาน: ออกแบบแบนเนอร์ Facebook',emp:'Sweet Corner',skill:'ออกแบบ',lvl:2,hrs:1,pay:150,rate:4.5,rev:8,ver:true,slot:2,trial:true,note:'งานทดลองสั้น 1 ชิ้น'},
+  {id:12,t:'ถ่ายภาพกิจกรรมคณะ',emp:'ชมรมกิจกรรมคณะ',skill:'ถ่ายภาพ',lvl:2,hrs:3,pay:600,rate:4.7,rev:22,ver:true,slot:2,note:'ส่งรูปที่คัดแล้วภายใน 2 วัน'},
+  {id:13,t:'ถ่ายรูปอาหารเมนูใหม่ร้านคาเฟ่',emp:'Brew Bar',skill:'ถ่ายภาพ',lvl:2,hrs:2,pay:500,rate:4.5,rev:11,ver:true,slot:1,note:'10 เมนู ร้านจัดแสงไว้ให้'},
+  {id:14,t:'เขียนบทความรีวิวร้านอาหารใกล้มหาวิทยาลัย',emp:'Campus Eats Blog',skill:'เขียนบทความ',lvl:2,hrs:2,pay:400,rate:4.3,rev:14,ver:true,slot:3,note:'500 คำ พร้อมรูปประกอบ'},
+  {id:15,t:'ทดลองงาน: เขียนแคปชั่นสินค้า 5 ชิ้น',emp:'Sweet Corner',skill:'เขียนบทความ',lvl:2,hrs:1,pay:100,rate:4.5,rev:8,ver:true,slot:2,trial:true,note:'งานทดลองสั้น ๆ'},
+  {id:16,t:'ติวคณิตศาสตร์ ม.ต้น',emp:'ผู้ปกครองย่านมหาวิทยาลัย',skill:'ติวหนังสือ',lvl:2,hrs:2,pay:500,rate:4.9,rev:36,ver:true,slot:2,note:'สอนที่ห้องสมุด สัปดาห์ละ 1 ครั้ง'},
+  {id:17,t:'ติวภาษาอังกฤษพื้นฐาน',emp:'Bright Tutor',skill:'ติวหนังสือ',lvl:3,hrs:2,pay:700,rate:4.8,rev:40,ver:true,slot:3,note:'กลุ่มเล็ก 4 คน'},
+  {id:18,t:'ช่วยงานลงทะเบียนสัมมนา',emp:'คณะบริหารธุรกิจ',skill:'ช่วยงานกิจกรรม',lvl:1,hrs:3,pay:360,rate:4.6,rev:25,ver:true,slot:1,note:'ในมหาวิทยาลัย มีอาหารกลางวัน'},
+  {id:19,t:'ช่วยแจกเอกสารงานปฐมนิเทศ',emp:'ฝ่ายกิจการนักศึกษา',skill:'ช่วยงานกิจกรรม',lvl:1,hrs:2,pay:250,rate:4.5,rev:33,ver:true,slot:0,note:'เช้าตรู่ในมหาวิทยาลัย'},
+  {id:20,t:'โพสต์ไลค์ แชร์ รายได้เดือนละ 30,000',emp:'ไม่ระบุตัวตน',skill:'เขียนบทความ',lvl:1,hrs:1,pay:1500,rate:0,rev:0,ver:false,slot:3,note:'ขอสำเนาบัตรประชาชนก่อนเริ่มงาน'}
+];
+const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+function E(sk){return state.evid[sk]||(state.evid[sk]={quiz:null,task:null,peers:[],emp:[]})}
+function stage(sk){const e=E(sk),s1=e.quiz!=null&&e.quiz>=100,s2=s1&&e.task!=null&&e.task>=4,s3=s2&&e.emp.length>0&&avg(e.emp)>=4;return{s:[s1,s2,s3],lv:s1?(s2?(s3?3:2):1):0}}
+function eff(sk){return stage(sk).lv}
+function nextStep(sk){const s=stage(sk).s;return !s[0]?{m:'quiz',t:'ทำแบบทดสอบ'}:!s[1]?{m:'task',t:'ส่งงานลองทำ'}:!s[2]?{m:'emp',t:'หางานจริงเพื่อรับรีวิว'}:null}
+function freeHours(d){return state.busy[d].reduce((s,b,i)=>s+(b?0:SLOT_H[i]),0)}
+function match(j){
+  const fh=freeHours(state.day),free=!state.busy[state.day][j.slot]&&fh>=j.hrs;
+  const lv=eff(j.skill),ok=lv>=j.lvl,can=free&&(ok||j.trial);
+  return {free,ok,can,lv,fh,score:(free?4:0)+(ok?2:0)+(j.trial&&!lv?1:0)+(j.ver?1:0)-(state.avoid.has(j.skill)?3:0)};
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=tr(m);t.className='show';clearTimeout(toast.k);toast.k=setTimeout(()=>t.className='',1800)}
+function totals(){
+  const rng={day:1,week:7,month:31}[state.period];
+  const rows=state.income.filter(e=>e.d<rng);
+  const inc=rows.filter(e=>e.t==='in'),out=rows.filter(e=>e.t==='out');
+  return {rows,inc:inc.reduce((s,e)=>s+e.a,0),out:out.reduce((s,e)=>s+e.a,0),h:inc.reduce((s,e)=>s+e.h,0)};
+}
+function monthIncome(){return state.income.filter(e=>e.t==='in'&&e.d<31).reduce((s,e)=>s+e.a,0)}
+function netAll(){return state.income.reduce((s,e)=>s+(e.t==='in'?e.a:-e.a),0)}
+
+const DAYFULL=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
+const unl=sk=>JOBS.filter(j=>j.skill===sk&&!j.mine&&j.lvl<=eff(sk)).length;
+function weekPlan(ov,tgt){
+  const earned=state.income.filter(e=>e.t==='in'&&e.d<7).reduce((s,e)=>s+e.a,0);
+  const pend=JOBS.filter(j=>state.applied.has(j.id)&&!state.rated.has(j.id)).reduce((s,j)=>s+j.pay,0);
+  const need=tgt!==undefined?Math.max(0,tgt-pend):Math.max(0,state.weekGoal-earned-pend);let total=0,hours=0;const picks=[],used=new Set();
+  const lv=sk=>ov&&ov[sk]!==undefined?ov[sk]:eff(sk);
+  const cand=JOBS.filter(j=>!j.mine&&!state.hidden.has(j.id)&&!state.applied.has(j.id)&&!state.alerts.some(a=>a.t===j.t)&&(lv(j.skill)>=j.lvl||j.trial)&&j.hrs<=SLOT_H[j.slot]).sort((a,b)=>b.pay/b.hrs-a.pay/a.hrs);
+  for(const j of cand){if(total>=need)break;
+    const d=[0,1,2,3,4,5,6].find(x=>!state.busy[x][j.slot]&&!used.has(x+','+j.slot));
+    if(d===undefined)continue;used.add(d+','+j.slot);picks.push({j,d});total+=j.pay;hours+=j.hrs}
+  return {earned,pend,need,total,hours,picks,ok:total>=need};
+}
+function bestLevelUp(base,tgt){
+  if(base.need===0)return null;let best=null;
+  ALL_SKILLS.forEach(sk=>{const l=eff(sk);if(l>=3)return;const p=weekPlan({[sk]:l+1},tgt);
+    if(!p.ok)return;
+    if(!base.ok){if(!best||p.hours<best.hours)best={sk,to:l+1,hours:p.hours,unlock:true}}
+    else if(p.hours<base.hours&&(!best||base.hours-p.hours>best.saved))best={sk,to:l+1,hours:p.hours,saved:base.hours-p.hours}});
+  return best;
+}
+function homeTarget(){const gap=Math.max(0,state.goal-monthIncome()),now=new Date(),dl=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()+1;return Math.ceil(gap/Math.max(1,Math.ceil(dl/7)))}
+function plan(){
+  const fh=freeHours(state.day);let rem=fh,est=0;const used=new Set(),pick=[];
+  JOBS.filter(j=>!state.hidden.has(j.id)).map(j=>({j,m:match(j)})).filter(x=>x.m.can).sort((a,b)=>b.j.pay/b.j.hrs-a.j.pay/a.j.hrs).forEach(({j})=>{
+    if(j.hrs<=rem&&!used.has(j.slot)){rem-=j.hrs;used.add(j.slot);est+=j.pay;pick.push(j)}});
+  return {fh,est,pick};
+}
+function viewJobs(){
+  const p=plan(),need=Math.max(0,state.goal-monthIncome()),inPlan=new Set(weekPlan(undefined,homeTarget()).picks.map(x=>x.j.id));
+  const list=JOBS.filter(j=>!state.hidden.has(j.id)).map(j=>({j,m:match(j)})).sort((a,b)=>b.m.score-a.m.score);
+  return `
+  <div class="hero2"><div>${ic('clock',22)}<b>${p.fh} ชม.</b><span class="mute">เวลาว่าง</span></div>
+    <div>${ic('coin',22)}<b>≈ ${fmt(p.est)} ฿</b><span>ทำงานแล้วได้</span></div>
+    <div>${ic('target',22)}<b>${fmt(need)} ฿</b><span class="mute">ขาดอีก</span></div></div>
+  <div class="chips" role="group" aria-label="เลือกวัน">${DAYS.map((d,i)=>`<button class="chip ${i===state.day?'on':''}" data-day="${i}">${d}</button>`).join('')}</div>
+  ${postBlock()}
+  ${list.map(({j,m})=>{
+    const done=state.applied.has(j.id),rated=state.rated.has(j.id),o=state.open;
+    const why=[j.note,
+      m.free?`ว่างช่วง${SLOTS[j.slot]} และมีเวลาว่างวันนี้ ${m.fh} ชม. พอสำหรับงาน ${j.hrs} ชม.`:`ช่วง${SLOTS[j.slot]}ของวันนี้ไม่ว่างหรือเวลาว่างไม่พอ`,
+      `ระดับ ${j.skill} ของคุณ: ${LV[m.lv]} · งานนี้ต้องการ: ${LV[j.lvl]} ${m.ok?'(ถึงเกณฑ์)':j.trial?'(ยังไม่ถึง แต่เป็นงานทดลอง สมัครได้)':'(ยังไม่ถึงเกณฑ์)'}`];
+    return `
+  <div class="card job">
+    <div class="row"><b>${j.t}</b>${j.ver?`<span class="okc" role="img" aria-label="ยืนยันตัวตนแล้ว" title="ยืนยันตัวตนแล้ว">${ic('shield',22)}</span>`:''}</div>
+    <p class="mute">${j.emp}${j.ver?` · ★ ${j.rate} (${j.rev})`:''}</p>
+    <div class="kv"><span>${ic('clock')} ${j.hrs} ชม.</span><b class="pay">${ic('coin')} ${fmt(j.pay)} ฿</b><span class="mute">${ic('up')} ${fmt(Math.round(j.pay/j.hrs))}/ชม.</span></div>
+    <div class="chips">
+      <span class="tag t-pri">${ic('badge',14)} ${j.skill} · ${LV[j.lvl]}</span>
+      ${j.trial?`<span class="tag t-pri">${ic('star',14)} งานทดลองสั้น</span>`:''}
+      ${(()=>{const al=state.alerts.find(a=>a.t===j.t);return al?`<span class="tag t-bad">${ic('alert',14)} ชุมชนเตือน ${al.n}</span>`:''})()}
+      ${inPlan.has(j.id)?`<span class="tag t-pri">${ic('target',14)} อยู่ในแผนสัปดาห์</span>`:''}
+      ${m.can?`<span class="tag t-ok">${ic('check',14)} สมัครได้</span>`:(m.free?`<span class="tag t-warn">${ic('badge',14)} ระดับไม่ถึง</span>`:`<span class="tag t-warn">${ic('calendar',14)} ชนตารางเวลา</span>`)}
+    </div>
+    <details class="why"><summary aria-label="ทำไมแนะนำ" title="ทำไมแนะนำ">${ic('info',16)}</summary><ul>${why.map(w=>`<li>${w}</li>`).join('')}</ul></details>
+    <div class="row acts"><div class="grow">
+      ${j.mine?`<span class="tag t-pri">${ic('users',14)} โพสต์โดยคุณ</span><button class="btn sm ghost" data-delpost="${j.id}">${ic('xc',16)} ลบประกาศ</button>`:rated?`<span class="tag t-ok">${ic('check',14)} เสร็จแล้ว +${fmt(j.pay)} ฿</span>`
+       :done?`<span class="tag t-warn">${ic('clock',14)} รอผล</span><button class="btn sm" data-rate="${j.id}">${ic('check',16)} จบงาน</button>`
+       :`<button class="btn sm" data-apply="${j.id}" ${m.can?'':'disabled style="opacity:.5;cursor:not-allowed"'}>${ic('send',16)} สมัคร</button>`}
+      ${(!m.ok&&!j.trial&&m.free)?`<button class="btn sm ghost" data-climb="${j.skill}">${ic('badge',16)} ขึ้นระดับ</button>`:''}
+    </div>
+      <button class="ibtn" data-mmopen="${j.id}" aria-label="ไม่ตรงกับฉัน" title="ไม่ตรงกับฉัน">${ic('xc',20)}</button>
+      <button class="ibtn ${state.reported.has(j.id)?'on':''}" data-repopen="${j.id}" aria-label="รายงาน" title="รายงาน">${ic('flag',20)}</button>
+    </div>
+    ${o&&o.t==='mm'&&o.id===j.id?`<div class="panel"><p class="mute">งานนี้ไม่ตรงเพราะอะไร</p><div class="chips">${['ยากเกินไป','ไม่ใช่ทักษะนี้','เวลาไม่ลงตัว'].map(r=>`<button class="chip" data-mm="${j.id},${r}">${r}</button>`).join('')}</div></div>`:''}
+    ${o&&o.t==='rep'&&o.id===j.id?`<div class="panel"><p class="mute">${ic('flag',14)} รายงานประกาศนี้เพราะ</p><div class="chips">${['ขอเงินก่อนทำงาน','ข้อมูลไม่ตรงความจริง','ผู้ว่าจ้างน่าสงสัย'].map(r=>`<button class="chip" data-rep="${j.id},${r}">${r}</button>`).join('')}</div></div>`:''}
+    ${o&&o.t==='rate'&&o.id===j.id?`<form class="add panel" id="rateForm"><input type="hidden" name="jid" value="${j.id}">
+      <label class="mute full">${ic('star',14)} ให้คะแนนงานนี้ (เดโม)
+        <select name="e" style="width:100%"><option value="5">5 ตรงมาก</option><option value="4">4 ตรง</option><option value="3">3 พอใช้</option><option value="2">2 ไม่ค่อยตรง</option><option value="1">1 ไม่ตรงเลย</option></select></label>
+      <button class="btn full" type="submit">${ic('check')} บันทึก</button></form>`:''}
+  </div>`}).join('')}`;
+}
+const BUSY={student:'เรียน',worker:'ทำงานประจำ',other:'ติดธุระ'};
+function postBlock(){
+  if(!state.postOpen)return `<button class="btn" data-postopen="1" style="width:100%;margin-bottom:12px">${ic('plus')} ลงประกาศหาคน</button>`;
+  return `<form class="card add" id="jobForm" style="margin-bottom:12px"><b class="full">${ic('briefcase')} ลงประกาศหาคน</b>
+   <input class="full" name="t" placeholder="ชื่องาน" required aria-label="ชื่องาน">
+   <label class="mute">ทักษะที่ต้องการ<select name="s" style="width:100%">${ALL_SKILLS.map(x=>`<option>${x}</option>`).join('')}</select></label>
+   <label class="mute">ระดับขั้นต่ำ<select name="l" style="width:100%">${[1,2,3].map(n=>`<option value="${n}">${LV[n]}</option>`).join('')}</select></label>
+   <input name="h" type="number" min="1" step="0.5" placeholder="จำนวนชั่วโมง" required aria-label="จำนวนชั่วโมง">
+   <input name="p" type="number" min="1" placeholder="ค่าจ้าง (฿)" required aria-label="ค่าจ้าง (฿)">
+   <label class="mute full">ช่วงเวลาทำงาน<select name="w" style="width:100%">${SLOTS.map((x,i)=>`<option value="${i}">${x}</option>`).join('')}</select></label>
+   <input class="full" name="n" placeholder="รายละเอียด" aria-label="รายละเอียด">
+   <button class="btn" type="submit">${ic('send')} ลงประกาศ</button><button class="btn ghost" type="button" data-postopen="1">${ic('xc',16)} ปิด</button></form>`;
+}
+function viewSchedule(){
+  const free=DAYS.reduce((s,_,i)=>s+freeHours(i),0),bl=BUSY[state.role];
+  return `
+  <h2>${ic('calendar',20)} ตารางเวลาของฉัน</h2>
+  <div class="chips" role="group" aria-label="ฉันคือ">${[['student','นักเรียน/นักศึกษา'],['worker','คนทำงานประจำ'],['other','อื่น ๆ']].map(([k,l])=>`<button class="chip ${state.role===k?'on':''}" data-role="${k}">${l}</button>`).join('')}</div>
+  <div class="chips" style="margin-bottom:8px"><span class="tag t-warn">${ic('book',14)} ${bl}</span><span class="tag t-ok">${ic('check',14)} ว่าง</span><span class="mute">${ic('info',14)} แตะเพื่อสลับ</span></div>
+  <div class="card"><div class="sched">
+    <span></span>${SLOTS.map(s=>`<span class="h">${s}</span>`).join('')}
+    ${DAYS.map((d,di)=>`<span class="h">${d}</span>`+SLOTS.map((s,si)=>{const b=state.busy[di][si];return `<button class="cell ${b?'busy':''}" data-cell="${di},${si}" aria-pressed="${b}">${ic(b?'book':'check',16)}<span>${b?bl:'ว่าง'}</span></button>`}).join('')).join('')}
+  </div></div>
+  <div class="card row"><span>${ic('clock',20)} <b>${free} ชม.</b> ว่างต่อสัปดาห์</span></div>
+  <div class="row" style="gap:8px"><button class="btn" data-go="jobs">${ic('briefcase')} ดูงานที่เหมาะกับฉัน</button><button class="btn ghost" data-go="assess">${ic('badge')} ไปที่บันไดทักษะ</button></div>`;
+}
+function viewCommunity(){
+  const saved=Math.max(0,monthIncome()-monthOut()),cp=Math.min(100,Math.round(saved/1000*100));
+  return `
+  <h2>${ic('users',20)} ชุมชน Daywork</h2>
+  <div class="card"><div class="row"><b>${ic('target')} ท้าออมเงิน 30 วัน</b><span class="mute">${ic('users',14)} ${128+(state.joined?1:0)} คนร่วมท้า</span></div>
+    <div class="lab"><span>${ic('stack',14)} เป้าออม</span><span>${fmt(saved)} / 1,000 ฿</span></div><div class="prog"><i style="width:${cp}%"></i></div>
+    ${state.joined?`<span class="tag t-ok">${ic('check',14)} เข้าร่วมแล้ว</span>`:`<button class="btn sm" data-join="1">${ic('plus',16)} เข้าร่วม</button>`}</div>
+  <div class="card"><b>${ic('alert')} เตือนภัยงานหลอก</b>${state.alerts.map(a=>`<div class="item"><span>${a.t}</span><span class="tag t-bad">${ic('flag',14)} ${a.n} คนรายงาน</span></div>`).join('')}</div>
+  <form class="card add" id="boardForm"><select name="c" aria-label="หมวด">${['เคล็ดลับ','ถามตอบ','รีวิวงาน','หาเพื่อนทำงาน'].map(x=>`<option>${x}</option>`).join('')}</select><input name="t" placeholder="เขียนอะไรถึงชุมชน" required aria-label="เขียนอะไรถึงชุมชน"><button class="btn full" type="submit">${ic('send')} โพสต์</button></form>
+  ${state.posts.map(p=>{const lk=state.liked.has(p.id);return `<div class="card"><div class="row"><span class="row" style="gap:8px"><span class="eic in">${p.a[0]}</span><b>${p.a}</b></span><span class="tag t-pri">${p.c}</span></div><p style="margin:8px 0">${p.t}</p><button class="chip ${lk?'on':''}" data-like="${p.id}" aria-pressed="${lk}">${ic('heart',14)} ${p.l+(lk?1:0)}</button></div>`}).join('')}`;
+}
+const MTH=[['quiz','ทดสอบเฉพาะทักษะ'],['task','ลงมือทำจริง'],['peer','ความเห็นเพื่อน'],['emp','ผู้ว่าจ้าง']];
+const Q={
+'ตัดคลิป':[['คลิปแนวตั้งสำหรับ TikTok/Reels ควรใช้สัดส่วนใด','16:9','9:16','1:1',1],['จะไม่ให้เพลงกลบเสียงพูดต้องทำอย่างไร','ลดเสียงเพลงช่วงที่มีเสียงพูด','เร่งเสียงพูดให้สุด','ตัดเพลงทิ้งเสมอ',0]],
+'ทำสไลด์':[['สไลด์ที่อ่านง่ายควรมีข้อความแบบใด','ย่อหน้ายาวเต็มหน้า','ประเด็นสั้น ๆ หน้าละหนึ่งความคิด','ตัวอักษรเล็กหลายบรรทัด',1],['การใช้สีในสไลด์ที่เหมาะสมคือ','ใช้ทุกสีให้สวย','ใช้ 2–3 สีและตัดกันชัด','พื้นหลังลายกับตัวอักษรสีอ่อน',1]],
+'ออกแบบ':[['โปสเตอร์ควรเริ่มจัดจากอะไร','หัวข้อหลักที่เด่นที่สุด','รูปให้เยอะที่สุด','ใช้ฟอนต์หลายแบบ',0],['ไฟล์ส่งพิมพ์ควรใช้โหมดสีใด','CMYK','RGB เท่านั้น','ขาวดำเท่านั้น',0]],
+'ถ่ายภาพ':[['ถ่ายสินค้าให้ชัดควรเน้นอะไร','แสงสม่ำเสมอ พื้นหลังเรียบ','ใช้แฟลชตรง ๆ เสมอ','ถ่ายย้อนแสงทุกครั้ง',0],['กฎสามส่วนใช้ทำอะไร','จัดองค์ประกอบภาพ','เพิ่มความไวชัตเตอร์','ลดสัญญาณรบกวน',0]],
+'เขียนบทความ':[['หัวข้อบทความที่ดีเป็นอย่างไร','ยาวและคลุมเครือ','ตรงประเด็นและบอกประโยชน์','พิมพ์ใหญ่ทั้งหมด',1],['ก่อนส่งงานเขียนควรทำอะไร','ตรวจคำผิดและข้อเท็จจริง','ส่งทันทีไม่อ่านซ้ำ','เพิ่มคำให้ยาวขึ้น',0]],
+'ติวหนังสือ':[['น้องไม่เข้าใจโจทย์ ควรทำอย่างไร','เฉลยคำตอบทันที','ถามว่าติดตรงไหนแล้วสอนทีละขั้น','ข้ามไปโจทย์ใหม่',1],['แผนติว 2 ชั่วโมงที่ดีคือ','สอนต่อเนื่องไม่หยุด','แบ่งสอน ทำโจทย์ และสรุป','ให้ทำแบบฝึกหัดอย่างเดียว',1]],
+'ช่วยงานกิจกรรม':[['ถึงงานแล้วควรทำอะไรก่อน','รับหน้าที่และจุดประจำกับหัวหน้า','เดินดูงานตามสบาย','รอให้มีคนเรียก',0],['พบปัญหาหน้างานควรทำอย่างไร','แก้เองเงียบ ๆ','แจ้งหัวหน้าทีมทันทีพร้อมเสนอทางแก้','รอจนกิจกรรมจบ',1]]};
+const TASK={'ตัดคลิป':'ตัดคลิปแนวตั้ง 30 วินาที ใส่ซับและเพลง','ทำสไลด์':'ทำสไลด์ 5 หน้าเรื่อง "งบรายเดือนของนักศึกษา"','ออกแบบ':'ออกแบบโปสเตอร์ A4 โปรโมตร้านขนม','ถ่ายภาพ':'ถ่ายสินค้า 3 ชิ้น ชิ้นละ 3 มุม','เขียนบทความ':'เขียนบทความ 300 คำเรื่อง "ทำงานพิเศษระหว่างเรียน"','ติวหนังสือ':'อธิบายโจทย์คณิต 1 ข้อเป็นขั้นตอน','ช่วยงานกิจกรรม':'เขียนแผนหน้าที่และเวลาของทีมงานรับน้อง 4 ชั่วโมง'};
+ALL_SKILLS.push('งานบริการ');
+Q['งานบริการ']=[['ลูกค้าบ่นว่าอาหารช้า ควรทำอย่างไร','ขอโทษ ตรวจสอบเวลาและแจ้งให้ลูกค้าทราบ','เถียงกลับ','เมินและทำงานต่อ',0],['ก่อนเริ่มกะควรทำอะไร','เตรียมของและเช็กหน้าที่ของกะ','รอให้มีลูกค้าก่อน','เล่นโทรศัพท์',0]];
+TASK['งานบริการ']='เขียนขั้นตอนต้อนรับและรับออเดอร์ลูกค้า 5 ขั้น';
+JOBS.push(
+ {id:21,t:'ช่วยขายของตลาดนัดสุดสัปดาห์',emp:'แม่ค้าตลาดนัด',skill:'งานบริการ',lvl:1,hrs:4,pay:500,rate:4.7,rev:18,ver:true,slot:1,note:'ยืนขายและทอนเงิน'},
+ {id:22,t:'เสิร์ฟอาหารช่วงเย็น',emp:'ร้านอาหารครัวบ้านสวน',skill:'งานบริการ',lvl:2,hrs:3,pay:450,rate:4.6,rev:21,ver:true,slot:2,note:'มีอาหารเย็นให้'},
+ {id:23,t:'แพ็คของออนไลน์',emp:'ร้านค้าออนไลน์ใกล้บ้าน',skill:'งานบริการ',lvl:1,hrs:2,pay:300,rate:4.4,rev:12,ver:true,slot:3,note:'ทำที่ร้าน ไม่ต้องใช้ประสบการณ์'},
+ {id:24,t:'ทดลองงาน: แพ็คของ 20 ชิ้น',emp:'ร้านค้าออนไลน์ใกล้บ้าน',skill:'งานบริการ',lvl:2,hrs:1,pay:100,rate:4.4,rev:12,ver:true,slot:2,trial:true,note:'งานทดลองสั้น ๆ'});
+function viewAssess(){
+  const sk=state.askill,m=state.method,e=E(sk);
+  const labels=['ทดสอบ','ลองทำ','งานจริง'];
+  const rows=ALL_SKILLS.map(k=>{const st=stage(k),n=nextStep(k),x=E(k),pn=new Set(x.peers.map(q=>q.n)).size;
+    let hint='';
+    if(n&&n.m==='quiz'&&x.quiz!=null)hint=`${x.quiz}%`;
+    if(n&&n.m==='task'&&x.task!=null)hint=`${x.task}/5`;
+    if(n&&n.m==='emp'&&x.emp.length)hint=`${avg(x.emp).toFixed(1)}/5`;
+    return `<div class="card"><div class="row"><b>${k}</b><span class="tag ${st.lv?'t-ok':'t-warn'}">${LV[st.lv]}</span></div>
+    <div class="steps">${labels.map((l,i)=>`<div class="stp ${st.s[i]?'done':''}"><span>${st.s[i]?'✓':i+1}</span>${l}</div>`).join('')}</div>
+    ${n?`<p class="mute">${ic('up',14)} ${LV[st.lv+1]}${hint?' · '+hint:''}</p><button class="btn sm" data-astep="${k}">${n.t}</button>`:'<p class="mute">ถึงระดับชำนาญแล้ว</p>'}
+    <div class="chips" style="margin-top:8px">${pn>=2?`<span class="tag t-ok">เพื่อนรับรอง ${pn} คน</span>`:`<button class="chip" data-peeropen="${k}">${ic('users',14)} เพื่อนรับรอง</button>`}</div></div>`}).join('');
+  let panel='';
+  if(state.assessOpen){
+    let body='';
+    if(m==='quiz'){const ans=state.qans[sk]||{};
+      body=Q[sk].map((q,i)=>`<div style="margin-bottom:10px"><b>${i+1}. ${q[0]}</b><div class="chips">${[1,2,3].map(o=>`<button class="chip ${ans[i]===o-1?'on':''}" data-qa="${i},${o-1}">${q[o]}</button>`).join('')}</div></div>`).join('')+`<button class="btn" data-qsubmit="1">ส่งคำตอบ</button>`}
+    if(m==='task')body=`<p class="mute">${TASK[sk]}</p><p class="mute">${ic('clock',14)} 30–60 · ${ic('star',14)} ≥ 4</p>
+      <form class="add" id="taskForm" style="margin-top:8px"><input class="full" name="l" placeholder="ลิงก์หรือชื่อไฟล์ผลงาน" required aria-label="ผลงาน">
+      <label class="mute full">คะแนนจากผู้ตรวจ (เดโม: ในแอปจริงผู้ตรวจให้คะแนนเอง)<select name="v" style="width:100%"><option value="5">5 ดีมาก</option><option value="4">4 ดี</option><option value="3">3 พอใช้</option><option value="2">2 ควรปรับปรุง</option><option value="1">1 ยังไม่ผ่าน</option></select></label>
+      <button class="btn full" type="submit">ส่งผลงาน</button></form>`;
+    if(m==='peer')body=`<p class="mute">${ic('users',14)} 2 คน → เพื่อนรับรอง</p>
+      ${e.peers.map(q=>`<div class="item"><span>${q.n}</span><span class="mute">${sk} ${q.v}/5</span></div>`).join('')}
+      <form class="add" id="peerForm" style="margin-top:8px"><input class="full" name="n" placeholder="ชื่อเพื่อน" required aria-label="ชื่อเพื่อน">
+      <label class="mute">คะแนนทักษะ ${sk}<select name="v" style="width:100%"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label>
+      <label class="mute full"><input type="checkbox" required> ความเห็นนี้เกี่ยวกับการทำงานเท่านั้น ไม่เกี่ยวกับเรื่องส่วนตัว</label>
+      <button class="btn full" type="submit">บันทึกความเห็น</button></form>`;
+    panel=`<div class="card" style="border-color:var(--pri)"><div class="row"><b>${sk}: ${m==='quiz'?'แบบทดสอบ':m==='task'?'ลองทำ':'เพื่อนรับรอง'}</b><button class="btn sm ghost" data-aclose="1">ปิด</button></div>${body}</div>`}
+  return `
+  <div class="row"><h2>บันไดทักษะของฉัน</h2><button class="btn sm ghost" data-areset="1">รีเซ็ตเป็นศูนย์</button></div>
+    ${panel}${rows}`;
+}
+function viewHome(){
+  const mi=monthIncome(),mo=monthOut(),gap=Math.max(0,state.goal-mi),tgt=homeTarget(),wp=weekPlan(undefined,tgt),tip=bestLevelUp(wp,tgt),gp=Math.min(100,Math.round(mi/state.goal*100));
+  const wf=[0,1,2,3,4,5,6].reduce((s,d)=>s+freeHours(d),0),pot=weekPlan(undefined,1e9);
+  return `
+  <h2>${ic('clock',20)} เวลาว่าง = เงิน</h2>
+  <div class="hero2"><div>${ic('calendar',22)}<b>${wf} ชม.</b><span class="mute">ว่างสัปดาห์นี้</span></div>
+    <div>${ic('coin',22)}<b>≈ ${fmt(pot.total)} ฿</b><span>ทำได้</span></div>
+    <div>${ic('target',22)}<b>${fmt(gap)} ฿</b><span class="mute">เดือนนี้ขาด</span></div></div>
+  <div class="card"><div class="lab" style="margin-top:0"><span>${ic('target',14)} ${fmt(mi)} / ${fmt(state.goal)} ฿</span><span>${gp}%</span></div><div class="prog"><i style="width:${gp}%"></i></div></div>
+  ${gap===0?`<div class="card"><span class="tag t-ok">${ic('check',14)} ถึงเป้าเดือนนี้แล้ว</span></div>`:`
+  <div class="card" style="border-color:var(--pri)"><div class="row"><h3>${ic('calendar',20)} แผนสัปดาห์นี้</h3><b>${ic('clock',16)} ≈ ${wp.hours} ชม. · ${fmt(tgt)} ฿</b></div>
+    ${wp.picks.map(({j,d})=>`<div class="item"><span>${DAYFULL[d]} · ${SLOTS[j.slot]}: ${j.t}</span><span class="pay">${j.hrs} ชม. · ${fmt(j.pay)} ฿</span></div>`).join('')}
+    ${wp.ok?'':`<p class="mute badc">${ic('alert',14)} −${fmt(wp.need-wp.total)} ฿</p>`}
+    <div class="row acts" style="margin-top:8px"><div class="grow">${wp.picks.length?`<button class="btn sm" data-applyplan="1">${ic('send',16)} สมัครทั้งชุด</button>`:''}</div>
+      <button class="ibtn" data-go="schedule" aria-label="เปิดเวลาว่าง" title="เปิดเวลาว่าง">${ic('calendar',20)}</button><button class="ibtn" data-go="jobs" aria-label="ดูงานทั้งหมด" title="ดูงานทั้งหมด">${ic('briefcase',20)}</button></div>
+    ${tip?`<div class="pi" style="margin-top:8px;flex-wrap:wrap">${ic('up',22)}<div style="flex:1"><b>${tip.sk} → ${LV[tip.to]}: ${tip.unlock?`${tip.hours} ชม.`:`${tip.hours} ชม. (−${tip.saved} ชม.)`}</b></div><button class="btn sm" data-climb="${tip.sk}">${ic('badge',16)} ขึ้นระดับ</button></div>`:''}
+  </div>`}
+  <div class="card row"><span>${ic('wallet',22)} <b>${fmt(netAll())} ฿</b></span><span class="kv" style="margin:0"><span class="okc">${ic('up',16)} +${fmt(mi)}</span><span class="badc">${ic('down',16)} −${fmt(mo)}</span></span><span class="row" style="gap:6px;flex-wrap:nowrap"><button class="ibtn" data-scanhome="1" aria-label="สแกนเงินสด" title="สแกนเงินสด">${ic('camera',20)}</button><button class="ibtn" data-go="ledger" aria-label="ดูรายการ" title="ดูรายการ">${ic('chev',18)}</button></span></div>`;
+}
+function viewMore(){
+  const items=[['community','users','ชุมชน','โพสต์ เตือนภัย ท้าออมเงิน'],['recent','clock','รายการล่าสุด',''],['assess','badge','ทักษะและระดับ','ทดสอบ ลองทำ งานจริง']];
+  return `<h2>${ic('grid',20)} เพิ่มเติม</h2>
+  ${items.map(([k,i,t,d])=>`<button class="menuitem" data-go="${k}">${ic(i,24)}<span><b>${t}</b></span>${ic('chev',18)}</button>`).join('')}
+  <button class="menuitem" data-themeopen="1">${ic('palette',24)}<span><b>ธีมและการเข้าถึง</b></span>${ic('chev',18)}</button>
+  <button class="menuitem" data-lang="1">${ic('globe',24)}<span><b>ภาษา / Language</b></span><span class="tag t-pri" id="langTxt">EN</span></button>`;
+}
+const srcOf=e=>e.src||(e.t==='in'?'in':'out');
+const DEN=[['b',20],['b',50],['b',100],['b',500],['b',1000],['c',1],['c',2],['c',5],['c',10]];
+function scanTotals(){const c=state.scan.counts;let b=0,k=0;DEN.forEach(([t,v])=>{const n=c[t+v]||0;if(t==='b')b+=n*v;else k+=n*v});return{b,k,all:b+k}}
+function scanCard(){
+  const sc=state.scan;
+  if(!sc.open)return `<button class="btn" data-scanopen="1" style="width:100%;margin-bottom:12px">${ic('camera')} สแกนเงินสด</button>`;
+  const T=scanTotals(),errs={not_granted:'ต้องอนุญาตให้ Claude อ่านรูป นับเองได้ด้านล่าง',unavailable:'อ่านรูปไม่ได้ที่นี่ นับเองได้ด้านล่าง',images_unavailable:'อ่านรูปไม่ได้ที่นี่ นับเองได้ด้านล่าง'};
+  return `<div class="card" style="border-color:var(--pri)"><div class="row"><h3>${ic('camera',20)} สแกนเงินสด</h3><button class="ibtn" data-scanclose="1" aria-label="ปิด" title="ปิด">${ic('xc',20)}</button></div>
+    <input id="scanFile" class="vh" type="file" accept="image/*" capture="environment"><label for="scanFile" class="btn" style="display:flex;justify-content:center;gap:6px;margin:8px 0">${ic('camera')} ถ่ายรูปเงิน</label>
+    ${sc.st==='loading'?`<p class="mute">${ic('clock',14)} กำลังอ่านรูป…</p>`:''}
+    ${sc.img?`<img src="${sc.img}" alt="" style="max-width:100%;max-height:160px;border-radius:12px;display:block;margin:0 auto 8px">`:''}
+    ${sc.st==='err'?`<p class="mute badc">${ic('alert',14)} ${errs[sc.err]||'อ่านรูปไม่สำเร็จ ลองใหม่หรือนับเอง'}</p>`:''}
+    ${sc.st==='done'?`<p class="mute">${ic('info',14)} AI อ่านผิดได้ ตรวจจำนวนก่อนบันทึก</p>`:''}
+    ${DEN.map(([t,v])=>{const n=sc.counts[t+v]||0;return `<div class="den"><span>${ic(t==='b'?'note':'coin',20)}</span><span>${t==='b'?'ธนบัตร':'เหรียญ'} ${fmt(v)} ฿</span><span class="row" style="gap:6px;flex-wrap:nowrap"><button class="ibtn" data-den="${t}${v},-1" aria-label="−">${ic('minus',16)}</button><span class="n">${n}</span><button class="ibtn" data-den="${t}${v},1" aria-label="+">${ic('plus',16)}</button></span><b style="text-align:right">${fmt(n*v)}</b></div>`}).join('')}
+    <div class="chips" style="margin-top:10px"><span class="tag t-pri">${ic('note',14)} ธนบัตร ${fmt(T.b)} ฿</span><span class="tag t-warn">${ic('coin',14)} เหรียญ ${fmt(T.k)} ฿</span></div>
+    <div class="kv big"><span>${ic('wallet',20)} รวม ${fmt(T.all)} ฿</span></div>
+    <p class="mute" style="margin-top:8px">${ic('info',14)} ที่มาของเงิน</p>
+    <div class="srcs"><button class="srcb ${sc.src==='in'?'on':''}" data-scansrc="in" aria-pressed="${sc.src==='in'}">${ic('briefcase',22)}ในแอป<span class="mute">ค่าจ้างจากงานใน Daywork</span></button>
+      <button class="srcb ${sc.src==='out'?'on':''}" data-scansrc="out" aria-pressed="${sc.src==='out'}">${ic('wallet',22)}นอกแอป<span class="mute">เงินจากที่อื่น</span></button></div>
+    ${sc.src?'':`<p class="mute badc">${ic('alert',14)} เลือกที่มาของเงินก่อนบันทึก</p>`}
+    <button class="btn" data-scansave="1" ${(T.all>0&&sc.src)?'':'disabled style="opacity:.5;cursor:not-allowed"'}>${ic('check')} บันทึก</button></div>`;
+}
+async function scanRun(file){
+  if(!file)return;const sc=state.scan;sc.err='';sc.st='loading';
+  const fr=new FileReader();fr.onload=()=>{sc.img=fr.result;render()};fr.readAsDataURL(file);render();
+  try{
+    if(typeof claude==='undefined')throw {code:'unavailable'};
+    const sample=await claude.use('sample');if(!sample)throw {code:'unavailable'};
+    const lim=await sample.limits().catch(()=>null);if(!lim||!lim.images)throw {code:'images_unavailable'};
+    const r=await sample.json('This photo shows Thai baht banknotes and/or coins. Identify each clearly visible banknote or coin and count how many of each. Valid banknote values: 20, 50, 100, 500, 1000. Valid coin values: 1, 2, 5, 10. Count only items you can clearly see; skip anything unclear; never guess hidden ones. Reply with only JSON: {"items":[{"kind":"banknote","value":100,"count":2},{"kind":"coin","value":10,"count":3}]}',{images:[file],cache:false});
+    const counts={};
+    (r.items||[]).forEach(i=>{const k=(i.kind==='coin'?'c':'b')+Number(i.value);if(DEN.some(([a,b])=>a+b===k))counts[k]=Math.min(99,(counts[k]||0)+Math.max(0,Math.round(Number(i.count)||0)))});
+    sc.counts=counts;sc.st='done';
+  }catch(er){sc.st='err';sc.err=(er&&er.code)||'error'}
+  render();
+}
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='scanFile')scanRun(e.target.files&&e.target.files[0])});
+const PKI=['wallet','book','heart','target','star','home','users','coin','briefcase'];
+const PKT={classic:'ใช้จ่าย',wishlist:'เป้าหมาย',saving:'ออมสม่ำเสมอ'};
+const unalloc=()=>netAll()-state.pockets.reduce((a,p)=>a+p.bal,0);
+const avgRate=()=>{const a=JOBS.filter(j=>!j.mine&&!state.alerts.some(x=>x.t===j.t));return a.reduce((x,j)=>x+j.pay/j.hrs,0)/Math.max(1,a.length)};
+function pocketCard(p){
+  const act=state.pk.id===p.id?state.pk.act:null,r=Math.max(0,p.goal-p.bal),pc=p.goal?Math.min(100,Math.round(p.bal/p.goal*100)):0;
+  return `<div class="card"><div class="row"><span class="row" style="gap:8px;flex-wrap:nowrap"><span class="eic in">${ic(p.icon,18)}</span><b>${p.name}</b>${p.locked?`<span class="mute" role="img" aria-label="ล็อก" title="ล็อก">${ic('lock',16)}</span>`:''}</span><span class="tag t-pri">${PKT[p.type]}</span></div>
+    <div class="kv big" style="margin:6px 0"><span>${ic('wallet',18)} ${fmt(p.bal)}${p.goal?` / ${fmt(p.goal)}`:''} ฿</span></div>
+    ${p.goal?`<div class="prog"><i style="width:${pc}%"></i></div>`:''}
+    ${p.type==='wishlist'&&r>0?`<div class="kv mute"><span>${ic('calendar',14)} ${fmt(Math.ceil(r/p.weeks))} ฿/สัปดาห์</span><span>${ic('clock',14)} ≈ ${Math.ceil(r/avgRate())} ชม.</span></div>`:''}
+    ${p.type==='saving'?`<div class="kv mute"><span>${ic('stack',14)} ${fmt(p.step)} ฿ · ${p.streak} ครั้ง</span></div>`:''}
+    ${p.auto?`<span class="tag t-ok">${ic('send',12)} ${p.auto}%</span> `:''}${p.members.map(m=>`<span class="tag t-pri">${ic('users',12)} ${m}</span>`).join(' ')}
+    <div class="row acts" style="margin-top:8px"><div class="grow">${p.type==='saving'?`<button class="btn sm" data-pksave="${p.id}">${ic('check',16)} ออมเลย</button>`:''}</div>
+      <button class="ibtn" data-pkadd="${p.id}" aria-label="ย้ายเข้า" title="ย้ายเข้า">${ic('plus',18)}</button>
+      ${p.type==='classic'?`<button class="ibtn" data-pkspend="${p.id}" aria-label="ใช้จ่าย" title="ใช้จ่าย">${ic('down',18)}</button>`:''}
+      <button class="ibtn" data-pkout="${p.id}" aria-label="ย้ายออก" title="ย้ายออก">${ic('minus',18)}</button>
+      <button class="ibtn ${p.locked?'on':''}" data-pklock="${p.id}" aria-label="${p.locked?'ปลดล็อก':'ล็อก'}" title="${p.locked?'ปลดล็อก':'ล็อก'}" aria-pressed="${p.locked}">${ic('lock',18)}</button>
+      <button class="ibtn" data-pkshare="${p.id}" aria-label="ชวนเพื่อน" title="ชวนเพื่อน">${ic('users',18)}</button>
+      <button class="ibtn" data-pkdel="${p.id}" aria-label="ลบกระเป๋า" title="ลบกระเป๋า">${ic('xc',18)}</button></div>
+    ${act?`<form class="add panel" id="pkForm"><input type="hidden" name="id" value="${p.id}"><input type="hidden" name="act" value="${act}">
+      ${act==='share'?`<input class="full" name="n" placeholder="ชื่อเพื่อน" required aria-label="ชื่อเพื่อน">`:`<input class="full" name="v" type="number" min="1" placeholder="฿" required aria-label="จำนวนเงิน">`}
+      <button class="btn full" type="submit">${ic('check')} บันทึก</button></form>`:''}</div>`;
+}
+function pocketsView(){
+  const u=unalloc(),pk=state.pk;
+  return `<div class="row" style="margin-bottom:8px"><h2 style="margin:0">${ic('stack',20)} กระเป๋า</h2><span class="tag ${u>=0?'t-ok':'t-warn'}">${ic('wallet',14)} เงินที่ยังไม่แบ่ง ${fmt(Math.max(0,u))} ฿</span></div>
+  ${state.pockets.map(pocketCard).join('')}
+  ${pk.create?`<form class="card add" id="pkNew"><b class="full">${ic('plus')} สร้างกระเป๋า</b>
+    <input class="full" name="name" placeholder="ชื่อกระเป๋า" required aria-label="ชื่อกระเป๋า">
+    <select name="type" class="full" aria-label="ประเภท">${Object.entries(PKT).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
+    <div class="full chips" role="group" aria-label="ไอคอน">${PKI.map((i,n)=>`<label class="ico"><input type="radio" name="icon" value="${i}" ${n===0?'checked':''} aria-label="${i}">${ic(i,22)}</label>`).join('')}</div>
+    <input name="goal" type="number" min="0" placeholder="ยอดเป้าหมาย (฿)" aria-label="ยอดเป้าหมาย (฿)"><input name="weeks" type="number" min="1" placeholder="ภายในกี่สัปดาห์" aria-label="ภายในกี่สัปดาห์">
+    <input name="step" type="number" min="1" placeholder="ออมครั้งละ (฿)" aria-label="ออมครั้งละ (฿)"><input name="auto" type="number" min="0" max="50" placeholder="แบ่งอัตโนมัติจากงาน (%)" aria-label="แบ่งอัตโนมัติจากงาน (%)">
+    <button class="btn" type="submit">${ic('check')} บันทึก</button><button class="btn ghost" type="button" data-pknew="1">${ic('xc',16)} ปิด</button></form>`
+   :`<button class="btn ghost" data-pknew="1" style="width:100%;margin-bottom:12px">${ic('plus')} สร้างกระเป๋า</button>`}`;
+}
+const CATS={fam:{n:'ครอบครัว',i:'users',t:'in'},loan:{n:'กยศ.',i:'shield',t:'in'},part:{n:'พาร์ทไทม์',i:'briefcase',t:'in'},oth:{n:'อื่น ๆ',i:'wallet',t:'in'},
+  food:{n:'อาหาร',i:'fork',t:'out',need:1},transport:{n:'เดินทาง',i:'bus',t:'out',need:1},housing:{n:'ที่พัก',i:'home',t:'out',need:1},study:{n:'เรียน/อุปกรณ์',i:'cap',t:'out',need:1},shopping:{n:'ช้อปปิ้ง',i:'bag',t:'out',need:0},fun:{n:'บันเทิง',i:'film',t:'out',need:0},other:{n:'อื่น ๆ',i:'grid',t:'out',need:0}};
+const ecat=e=>e.cat||(e.t==='in'?(srcOf(e)==='in'?'part':'oth'):'other');
+const isNeed=e=>e.need!==undefined?!!e.need:!!CATS[ecat(e)].need;
+function financeCards(){
+  const mi=monthIncome(),mo=monthOut(),bp=state.budget?Math.round(mo/state.budget*100):0,sum=(a,f)=>a.filter(f).reduce((x,e)=>x+e.a,0);
+  const L=state.income,td=L.filter(e=>e.d===0),tI=sum(td,e=>e.t==='in'),tO=sum(td,e=>e.t==='out');
+  const outs=L.filter(e=>e.t==='out'&&e.d<31),ins=L.filter(e=>e.t==='in'&&e.d<31);
+  const byC={};outs.forEach(e=>{const c=ecat(e);byC[c]=(byC[c]||0)+e.a});const rowsC=Object.entries(byC).sort((a,b)=>b[1]-a[1]);
+  const nd=sum(outs,isNeed),wt=mo-nd,np=mo?Math.round(nd/mo*100):0;
+  const w0=sum(outs,e=>e.d<7),w1=sum(outs,e=>e.d>=7&&e.d<14),byI={};ins.forEach(e=>{const c=ecat(e);byI[c]=(byI[c]||0)+e.a});
+  const part=byI.part||0,pot=weekPlan(undefined,1e9).total,dom=new Date().getDate(),pct=w1?Math.round((w0-w1)/w1*100):null;
+  return `
+  ${bp>=80?`<div class="card" style="border-color:var(--warn);background:var(--warn-soft)"><b class="${bp>=100?'badc':''}">${ic('alert',20)} ${bp>=100?'เกินงบแล้ว':`ใช้ไป ${bp}% ของงบ`}</b><span class="mute"> · เหลืองบ ${fmt(Math.max(0,state.budget-mo))} ฿</span></div>`:''}
+  <div class="card"><h3>${ic('calendar',20)} สรุป</h3><div class="plan">
+    <div class="pi">${ic('clock',22)}<div><b class="${tI-tO>=0?'okc':'badc'}">${fmt(tI-tO)} ฿</b><span class="mute">วันนี้ · +${fmt(tI)} −${fmt(tO)}</span></div></div>
+    <div class="pi">${ic('calendar',22)}<div><b class="${mi-mo>=0?'okc':'badc'}">${fmt(mi-mo)} ฿</b><span class="mute">เดือนนี้ · +${fmt(mi)} −${fmt(mo)}</span></div></div></div></div>
+  <div class="menu4" role="group" aria-label="เมนูการเงิน">${[['cat','grid','ตามหมวด'],['insight','up','วิเคราะห์'],['source','users','ที่มารายได้'],['plan','target','บริหารเงิน']].map(([k,i,l])=>`<button class="mi ${state.lsec===k?'on':''}" data-lsec="${k}" aria-pressed="${state.lsec===k}">${ic(i,26)}<span>${l}</span></button>`).join('')}</div>
+  ${state.lsec==='cat'?`
+  <div class="card"><h3>${ic('down',20)} รายจ่ายตามหมวด</h3>
+    ${rowsC.length?rowsC.map(([c,a])=>`<div class="item"><span class="eic out">${ic(CATS[c].i,16)}</span><div class="grow">${CATS[c].n}<div class="prog" style="margin:4px 0 0"><i style="width:${Math.round(a/mo*100)}%;background:var(--bad)"></i></div></div><b>${fmt(a)}</b></div>`).join(''):`<p class="mute">${ic('info',14)} —</p>`}
+    ${mo?`<div class="lab"><span class="tag t-pri">${ic('check',12)} จำเป็น ${fmt(nd)} ฿ (${np}%)</span><span class="tag t-warn">${ic('alert',12)} ไม่จำเป็น ${fmt(wt)} ฿ (${100-np}%)</span></div><div class="prog" style="background:var(--warn-soft)"><i style="width:${np}%;background:var(--pri)"></i></div>`:''}</div>
+`:''}
+  ${state.lsec==='insight'?`
+  <div class="card"><h3>${ic('target',20)} วิเคราะห์การใช้จ่าย</h3>
+    ${rowsC[0]?`<div class="item"><span>${ic('target',16)} ใช้มากสุด: ${CATS[rowsC[0][0]].n} ${fmt(rowsC[0][1])} ฿ (${Math.round(rowsC[0][1]/mo*100)}%)</span></div>`:''}
+    ${mo?`<div class="item"><span class="${100-np>30?'badc':'okc'}">${ic(100-np>30?'alert':'check',16)} ไม่จำเป็น ${100-np}% · ${100-np>30?'ลดได้':'ใช้เงินจำเป็นเป็นหลัก'}</span></div>`:''}
+    ${pct!==null?`<div class="item"><span class="${pct>0?'badc':'okc'}">${ic(pct>0?'up':'down',16)} สัปดาห์นี้ ${fmt(w0)} ฿ (${pct>0?'+':''}${pct}% จากสัปดาห์ก่อน)</span></div>`:''}
+    <div class="item"><span>${ic('clock',16)} ใช้เฉลี่ยวันละ ${fmt(Math.round(mo/dom))} ฿</span></div></div>
+`:''}
+  ${state.lsec==='source'?`
+  <div class="card"><h3>${ic('up',20)} รายได้ตามที่มา</h3><div class="chips">${Object.entries(byI).map(([c,a])=>`<span class="tag ${c==='part'?'t-ok':'t-pri'}">${ic(CATS[c].i,12)} ${CATS[c].n} ${fmt(a)} ฿</span>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><span>${ic('briefcase',22)} <b>${fmt(part)} ฿</b> <span class="mute">${ic('coin',14)} ≈ ${fmt(pot)} ฿ ทำได้เพิ่ม</span></span><button class="btn sm" data-go="home">${ic('up',16)} เพิ่มรายได้</button></div></div>`:''}`;
+}
+function viewPockets(){return pocketsView()}
+function viewRecent(){const t=totals();return `
+  <div class="chips" role="group" aria-label="ช่วงเวลา">${[['day','รายวัน'],['week','รายสัปดาห์'],['month','รายเดือน']].map(([k,l])=>`<button class="chip ${state.period===k?'on':''}" data-period="${k}">${l}</button>`).join('')}</div>
+  <div class="card"><h3>${ic('stack',20)} รายการล่าสุด</h3>
+    ${t.rows.length?t.rows.map(e=>`<div class="item"><span class="eic ${e.t}">${ic(e.t==='in'?'up':'down',16)}</span><div class="grow">${e.n}<div class="mute">${e.d===0?'วันนี้':e.d+' วันก่อน'}${e.h?` · ${e.h} ชม.`:''}${e.t==='in'?` <span class="tag ${srcOf(e)==='in'?'t-pri':'t-warn'}">${ic(srcOf(e)==='in'?'briefcase':'wallet',12)} ${srcOf(e)==='in'?'ในแอป':'นอกแอป'}</span>`:''}</div></div><b class="${e.t==='in'?'okc':'badc'}">${e.t==='in'?'+':'-'}${fmt(e.a)}</b></div>`).join(''):`<p class="mute">${ic('info',14)} ยังไม่มีรายการในช่วงนี้</p>`}
+  </div>`;}
+function monthOut(){return state.income.filter(e=>e.t==='out'&&e.d<31).reduce((s,e)=>s+e.a,0)}
+function viewMoney(){
+  const t=totals(),mi=monthIncome(),mo=monthOut(),p=plan(),wp=weekPlan(),tip=bestLevelUp(wp),wpct=Math.min(100,Math.round(wp.earned/state.weekGoal*100));
+  const now=new Date(),dl=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()+1;
+  const perDay=Math.floor(Math.max(0,state.budget-mo)/Math.max(1,dl)),saved=mi-mo,need=Math.max(0,state.goal-mi);
+  const gp=Math.min(100,Math.round(mi/state.goal*100)),bp=Math.min(100,Math.round(mo/state.budget*100));
+  const bars=[...Array(7)].map((_,i)=>{const d=6-i;return {l:DAYS[(new Date().getDay()+6-d+700)%7],v:state.income.filter(e=>e.d===d&&e.t==='in').reduce((s,e)=>s+e.a,0)}});
+  const mx=Math.max(1,...bars.map(b=>b.v));
+  return `
+  <div class="hero"><small>${ic('wallet',16)} ยอดคงเหลือ</small><div class="big">${fmt(netAll())} ฿</div>
+    <div class="kv" style="justify-content:center"><span class="okc">${ic('up',16)} +${fmt(mi)}</span><span class="badc">${ic('down',16)} −${fmt(mo)}</span></div></div>
+  ${financeCards()}
+  ${state.lsec==='plan'?`
+  <div class="card"><h3>${ic('target',20)} บริหารเงิน</h3>
+    <div class="plan"><div class="pi">${ic('wallet',24)}<div><b>${fmt(perDay)} ฿</b><span class="mute">ใช้ได้วันละ</span></div></div>
+      <div class="pi">${ic('stack',24)}<div><b class="${saved>=0?'okc':'badc'}">${fmt(saved)} ฿</b><span class="mute">เหลือเก็บ</span></div></div></div>
+    <div class="lab"><span>${ic('down',14)} งบเดือนนี้</span><span>${fmt(mo)} / ${fmt(state.budget)} ฿</span></div>
+    <div class="prog"><i style="width:${bp}%;background:${bp>=90?'var(--bad)':'var(--warn)'}"></i></div>
+    <div class="lab"><span>${ic('target',14)} เป้ารายได้</span><span>${fmt(mi)} / ${fmt(state.goal)} ฿</span></div>
+    <div class="prog"><i style="width:${gp}%"></i></div>
+    ${need?`<button class="btn" data-go="jobs" style="margin-top:8px">${ic('briefcase')} หางานเพิ่ม · ขาดอีก ${fmt(need)} ฿</button>`:''}
+    <details class="why" style="margin-top:8px"><summary>${ic('plus',14)} ตั้งงบและเป้าหมาย</summary>
+      <form class="add" id="planForm" style="margin-top:8px"><input name="b" type="number" min="1" value="${state.budget}" aria-label="งบ/เดือน" placeholder="งบ/เดือน"><input name="g" type="number" min="1" value="${state.goal}" aria-label="เป้ารายได้/เดือน" placeholder="เป้ารายได้/เดือน"><button class="btn full" type="submit">${ic('check')} บันทึก</button></form></details>
+  </div>
+  <div class="chips" role="group" aria-label="ช่วงเวลา">${[['day','รายวัน'],['week','รายสัปดาห์'],['month','รายเดือน']].map(([k,l])=>`<button class="chip ${state.period===k?'on':''}" data-period="${k}">${l}</button>`).join('')}</div>
+  <div class="stats3"><div class="card okc">${ic('up',22)}<b>${fmt(t.inc)}</b><span class="mute">รายได้</span></div><div class="card badc">${ic('down',22)}<b>${fmt(t.out)}</b><span class="mute">รายจ่าย</span></div><div class="card">${ic('clock',22)}<b>${t.h} ชม.</b><span class="mute">ชั่วโมงทำงาน</span></div></div>
+  `:''}
+  ${scanCard()}
+  <div class="chips"><span class="tag t-pri">${ic('briefcase',14)} ในแอป ${fmt(t.rows.filter(e=>e.t==='in'&&srcOf(e)==='in').reduce((a,e)=>a+e.a,0))} ฿</span><span class="tag t-warn">${ic('wallet',14)} นอกแอป ${fmt(t.rows.filter(e=>e.t==='in'&&srcOf(e)==='out').reduce((a,e)=>a+e.a,0))} ฿</span></div>
+  <div class="card"><h3>${ic('up',20)} รายได้ 7 วันล่าสุด</h3><div class="bars">${bars.map(b=>`<div><i style="height:${Math.round(b.v/mx*80)}px"></i>${b.l}</div>`).join('')}</div></div>
+  <div class="card"><h3>${ic('plus',20)} บันทึกรายการ</h3>
+    <form class="add" id="addForm" style="margin-top:8px">
+      <input class="full" name="n" placeholder="ชื่อรายการ" required aria-label="ชื่อรายการ">
+      <select name="cat" aria-label="หมวด">${Object.entries(CATS).map(([k,c])=>`<option value="${k}">${c.t==='in'?'+':'−'} ${c.n}</option>`).join('')}</select>
+      <select name="nd" aria-label="จำเป็นหรือไม่"><option value="">ตามหมวด</option><option value="1">จำเป็น</option><option value="0">ไม่จำเป็น</option></select>
+      <select name="src" aria-label="ที่มาของเงิน"><option value="out">นอกแอป</option><option value="in">ในแอป</option></select>
+      <input name="a" type="number" min="1" placeholder="฿" required aria-label="จำนวนเงิน">
+      <input class="full" name="h" type="number" min="0" step="0.5" placeholder="ชม." aria-label="ชั่วโมงที่ทำงาน (ถ้ามี)">
+      <button class="btn full" type="submit">${ic('check')} บันทึก</button></form></div>
+`;
+}
+const ICONS={ledger:'wallet',pockets:'stack',home:'home',jobs:'briefcase',schedule:'calendar',more:'grid'};
+const TABS=[['ledger','บัญชี'],['pockets','กระเป๋า'],['home','เพิ่มรายได้'],['jobs','หางาน'],['schedule','ตารางเวลา'],['more','เพิ่มเติม']];
+const ic=(n,z=18)=>`<svg class="ic" width="${z}" height="${z}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const TR={"ตัดคลิปสั้นสำหรับร้านคาเฟ่": "Short video edit for a café", "ทำสไลด์นำเสนอ 10 หน้า": "10-slide presentation", "ช่วยงานรับน้องคณะวิศวะ": "Help at the engineering freshmen event", "ออกแบบโปสเตอร์ร้านขนม": "Dessert shop poster design", "ทดลองงาน: ถ่ายรูปสินค้า 5 ชิ้น": "Trial: photograph 5 products", "พิมพ์เอกสารที่บ้าน รายได้สูงมาก": "Type documents at home, very high pay", "ตัดคลิปรีวิวสินค้าลง": "Product review video for", "ทดลองงาน: ตัดคลิป 15 วินาที": "Trial: edit a 15-second clip", "ทำสไลด์สรุปรายงานกลุ่ม": "Group report summary slides", "ออกแบบโลโก้ร้านเสื้อผ้ามือสอง": "Logo for a secondhand clothing shop", "ทดลองงาน: ออกแบบแบนเนอร์": "Trial: design a banner for", "ถ่ายภาพกิจกรรมคณะ": "Faculty event photography", "ถ่ายรูปอาหารเมนูใหม่ร้านคาเฟ่": "Photograph new café menu items", "เขียนบทความรีวิวร้านอาหารใกล้มหาวิทยาลัย": "Write a restaurant review near campus", "ทดลองงาน: เขียนแคปชั่นสินค้า 5 ชิ้น": "Trial: write captions for 5 products", "ติวคณิตศาสตร์ ม.ต้น": "Math tutoring (lower secondary)", "ติวภาษาอังกฤษพื้นฐาน": "Basic English tutoring", "ช่วยงานลงทะเบียนสัมมนา": "Seminar registration help", "ช่วยแจกเอกสารงานปฐมนิเทศ": "Hand out documents at orientation", "โพสต์ไลค์ แชร์ รายได้เดือนละ": "Like & share posts, income per month:", "ไม่ระบุตัวตน": "Anonymous", "พี่ฝน (ปี 4 บริหาร)": "Fon (year-4 business student)", "ชมรมกิจกรรมคณะ": "Faculty activity club", "น้องปี 2 คณะบัญชี": "Year-2 accounting student", "คณะบริหารธุรกิจ": "Business Administration faculty", "ฝ่ายกิจการนักศึกษา": "Student Affairs office", "ผู้ปกครองย่านมหาวิทยาลัย": "Parent near campus", "ส่งงานภายใน 2 ชั่วโมง": "Deliver within 2 hours", "มีเทมเพลตให้": "Template provided", "ในมหาวิทยาลัย มีอาหารกลางวัน": "On campus, lunch provided", "เช้าตรู่ในมหาวิทยาลัย": "Early morning on campus", "ในมหาวิทยาลัย": "on campus", "แก้ไขได้ 2 รอบ": "Up to 2 revisions", "งานทดลองสั้น ๆ สำหรับคนที่ยังไม่มีประวัติ": "Short trial for people with no track record yet", "งานทดลองสั้น 1 ชิ้น": "Short trial, 1 piece", "งานทดลองสั้น ๆ": "Short trial", "ต้องโอนค่ามัดจำก่อนเริ่มงาน": "Requires a deposit transfer before starting", "คลิปแนวตั้ง 30–45 วินาที": "Vertical clip, 30–45 seconds", "หน้า มีเนื้อหาให้แล้ว": "pages, content provided", "ส่งไฟล์": "Deliver", "ส่งรูปที่คัดแล้วภายใน 2 วัน": "Deliver selected photos within 2 days", "เมนู ร้านจัดแสงไว้ให้": "menu items, the café sets up lighting", "คำ พร้อมรูปประกอบ": "words with photos", "สอนที่ห้องสมุด สัปดาห์ละ 1 ครั้ง": "Taught at the library, once a week", "กลุ่มเล็ก 4 คน": "Small group of 4", "ขอสำเนาบัตรประชาชนก่อนเริ่มงาน": "Asks for an ID card copy before starting", "ยืนยันตัวตนแล้ว": "Identity verified", "ยังไม่มีรีวิว": "No reviews yet", "รีวิว)": "reviews)", "บาท/ชม.": "THB/hr", "บาท · ต้องหาเพิ่มอีก": "THB · still need to earn", "บาท": "THB", "ชม. พอสำหรับงาน": "h free, enough for a job of", "ชม.": "h", "งานทดลองสั้น": "Short trial", "สมัครได้": "Can apply", "ระดับทักษะยังไม่ถึง": "Skill level not reached", "ชนตารางเรียน": "Clashes with class", "ทำไมถึงแนะนำ": "Why we recommend it", "ว่างช่วง": "Free in the ", "และมีเวลาว่างวันนี้": "and you have", "ของวันนี้มีเรียนหรือเวลาว่างไม่พอ": "slot today has class or not enough free time", "ช่วงเวลา": "Period", "ช่วง": "The ", "ของคุณ:": "(yours):", "งานนี้ต้องการ:": "this job needs:", "(ยังไม่ถึง แต่เป็นงานทดลอง สมัครได้)": "(not there yet, but it is a trial job so you can apply)", "(ยังไม่ถึงเกณฑ์)": "(not there yet)", "(ถึงเกณฑ์)": "(meets the requirement)", "สมัครงานที่ตรงระดับ จบงานแล้วกด \"จบงานแล้ว ให้คะแนน\"": "Apply to jobs at your level. When a job is done, press \"Job done, rate\"", "สมัครงานแล้ว รอผู้ว่าจ้างตอบกลับ": "Applied. Waiting for the employer to reply", "สมัครงาน": "Apply", "สมัครแล้ว": "Applied", "จบงานแล้ว ให้คะแนน": "Job done, rate it", "ไปทำขั้นต่อไป": "Do the next step", "ไม่ตรงกับฉัน": "Not for me", "รายงานแล้ว": "Reported", "งานนี้ไม่ตรงเพราะอะไร": "Why is this job not a fit?", "ยากเกินไป": "Too hard", "ไม่ใช่ทักษะนี้": "Not this skill", "เวลาไม่ลงตัว": "Timing doesn't work", "คะแนนจากผู้ว่าจ้าง: ทักษะตรงกับงานแค่ไหน (เดโม: ในแอปจริงผู้ว่าจ้างให้คะแนนในบัญชีของเขา)": "Employer score: how well did the skill fit the job? (Demo: in the real app the employer rates from their own account)", "ส่งคะแนน": "Submit score", "วันนี้คุณว่าง": "You are free today", "ชั่วโมงทำงาน": "Work hours", "ชั่วโมง": "hours", "เป้าหมายรายได้เดือนนี้": "Income goal this month", "เป้าหมายเดือนนี้": "This month's goal", "งานที่เหมาะกับเวลาว่างของคุณ": "Jobs that fit your free time", "เลือกวัน": "Choose a day", "ตารางเรียนของฉัน": "My class schedule", "แตะช่องเพื่อสลับระหว่าง \"มีเรียน\" และ \"ว่าง\" ระบบจะแนะนำงานจากช่วงที่ว่าง": "Tap a cell to switch between \"Class\" and \"Free\". We recommend jobs from your free slots.", "ว่างต่อสัปดาห์": "Free per week", "ระดับทักษะ": "Skill level", "ระดับมาจากบันไดทักษะ ผ่านขั้นไหนได้ระดับนั้น ไม่ต้องตั้งเอง": "Your level comes from the skill ladder: pass a step, get that level. No self-rating.", "ไปที่บันไดทักษะ": "Go to the skill ladder", "ดูงานที่เหมาะกับฉัน": "See jobs that fit me", "บันไดทักษะของฉัน": "My skill ladder", "รีเซ็ตเป็นศูนย์": "Reset to zero", "ผ่านขั้นไหน ได้ระดับนั้น: ผ่านทดสอบ": "Pass a step, get that level: pass the test", "เพิ่งเริ่ม · ลองทำได้ดี": "Beginner · do the trial task well", "พอทำได้ · ได้รีวิวดีจากงานจริง": "Intermediate · good review from a real job", "ถึงระดับชำนาญแล้ว": "Expert level reached", "ขั้นต่อไปเพื่อขึ้นระดับ": "Next step to reach level", "หางานจริงเพื่อรับรีวิว": "Find a real job to earn a review", "ทำแบบทดสอบ": "Take the test", "ส่งงานลองทำ": "Submit the trial task", "ทดสอบล่าสุด": "Latest test", "ต้องตอบถูกทุกข้อ ทำซ้ำได้": "must answer every question correctly, retakes allowed", "ลองทำล่าสุดได้": "Latest trial score", "ต้อง 4 ขึ้นไป ส่งใหม่ได้": "needs 4 or more, resubmit allowed", "คะแนนผู้ว่าจ้างเฉลี่ย": "Average employer score", "ต้อง 4 ขึ้นไป": "needs 4 or more", "เพื่อนรับรอง": "Peer endorsed", "ขอให้เพื่อนรับรอง (ไม่บังคับ)": "Ask friends to endorse (optional)", "แบบทดสอบ": "Test", "ทดสอบเฉพาะทักษะ": "Skill-specific test", "ลองทำ": "Trial", "ส่งคำตอบ": "Submit answers", "ผ่านเมื่อตอบถูกทุกข้อ ทำซ้ำได้": "Pass by answering every question correctly. Retakes allowed.", "ประมาณ 30–60 นาที) ผ่านเมื่อได้ 4 คะแนนขึ้นไป": "about 30–60 minutes) Pass with a score of 4 or more", "ลิงก์หรือชื่อไฟล์ผลงาน": "Link or file name of your work", "คะแนนจากผู้ตรวจ (เดโม: ในแอปจริงผู้ตรวจให้คะแนนเอง)": "Reviewer score (demo: in the real app the reviewer scores it)", "ส่งผลงาน": "Submit work", "ให้เพื่อนอย่างน้อย 2 คนให้ความเห็นเรื่องการทำงานเท่านั้น จะได้ตรา \"เพื่อนรับรอง\" (ไม่มีผลต่อระดับ)": "Ask at least 2 friends for feedback on work only to earn a \"Peer endorsed\" badge (no effect on level)", "ชื่อเพื่อน": "Friend's name", "คะแนนทักษะ": "Skill score", "ความเห็นนี้เกี่ยวกับการทำงานเท่านั้น ไม่เกี่ยวกับเรื่องส่วนตัว": "This feedback is about work only, not personal matters", "บันทึกความเห็นเพื่อนแล้ว": "Friend's feedback saved", "บันทึกความเห็น": "Save feedback", "ผลงาน": "Work", "ส่งรายงานให้ทีมตรวจสอบแล้ว": "Report sent to the review team", "รับทราบ ไปทำขั้นต่อไปในบันไดทักษะเพื่อขึ้นระดับ": "Noted. Do the next step on the skill ladder to level up", "จะแนะนำงานแนว": "Will recommend fewer jobs like", "น้อยลง": "", "รับทราบ จะเลือกงานที่เวลาลงตัวกว่านี้": "Noted. We will pick jobs with better timing", "ผ่านแบบทดสอบก่อน แล้วค่อยส่งงานลองทำ": "Pass the test first, then submit the trial task", "ผ่านแล้ว! ระดับ": "Passed! ", " เป็น": "is now ", "ต้องตอบถูกทุกข้อ ลองใหม่ได้": "Every answer must be correct. Try again.", "ได้ ": "Scored ", "ตอบให้ครบทุกข้อก่อนส่ง": "Answer every question before submitting", "บันทึกคะแนนแล้ว ระดับ": "Score saved. Level of ", "ตอนนี้:": "is now:", "รีเซ็ตผลทดสอบและคะแนนทั้งหมดเป็นศูนย์แล้ว": "All test results and scores have been reset to zero", "บันทึกรายการแล้ว": "Entry saved", "ตอบให้ครบ": "Answer all", "ยอดคงเหลือ": "Balance", "คงเหลือ": "Balance", "รายสัปดาห์": "Weekly", "รายเดือน": "Monthly", "รายวัน": "Daily", "รายได้ 7 วันล่าสุด": "Income, last 7 days", "รายได้": "Income", "รายจ่าย": "Expenses", "หามาแล้ว": "Earned so far", "จาก": "of", "บันทึกรายการ": "Log an entry", "ชื่อรายการ เช่น ตัดคลิป": "Item name, e.g. video editing", "ชื่อรายการ": "Item name", "ประเภท": "Type", "จำนวนเงิน (บาท)": "Amount (THB)", "จำนวนเงิน": "Amount", "ชั่วโมงที่ทำงาน (ถ้ามี)": "Hours worked (optional)", "บันทึก": "Save", "รายการล่าสุด": "Recent entries", "วันนี้": "Today", "วันก่อน": "days ago", "ยังไม่มีรายการในช่วงนี้ เพิ่มรายการแรกจากแบบฟอร์มด้านบน": "No entries in this period yet. Add your first one from the form above.", "ตัดคลิปรีวิวร้านกาแฟ": "Café review clip edit", "ทำสไลด์ให้รุ่นพี่": "Slides for a senior", "ค่าอาหาร": "Food", "ช่วยงานกิจกรรมคณะ": "Faculty event help", "ค่าเดินทาง": "Transport", "ติวคณิต ม.ปลาย": "Upper-secondary math tutoring", "ค่าหอพัก": "Dorm rent", "ธีมและการเข้าถึง": "Theme & accessibility", "รีเซ็ต": "Reset", "โหมดสี": "Color mode", "สีหลัก": "Accent color", "โหมดตาบอดสีใช้สีน้ำเงินคงที่": "color-blind mode uses a fixed blue", "โหมดตาบอดสี (ไม่แยกแค่แดง-เขียว ใช้สีน้ำเงิน-ส้มและเครื่องหมาย ✓ ! ✕ ช่วย)": "Color-blind mode (not just red-green: uses blue-orange plus ✓ ! ✕ marks)", "โหมดตาบอดสี": "Color-blind mode", "ขนาดตัวอักษรและหน้าจอ": "Text and screen size", "ปรับธีม ตาบอดสี และขนาดตัวอักษร": "Adjust theme, color-blind mode and text size", "ปรับธีม": "Adjust theme", "ลองกดเล่นได้เลย": "Try it out", "กดปุ่มจานสีวงกลมมุมขวาบน เพื่อเปลี่ยนโหมดขาว/มืด เปลี่ยนสีหลัก ใช้โหมดตาบอดสี หรือขยายตัวอักษร": "Tap the round palette button at the top right to switch light/dark, change the accent color, use color-blind mode, or enlarge text", "แล้วดูผลทั้งแอปทันที": "and see the whole app change instantly", "ลองเลย": "Try it", "เมนูหลัก": "Main menu", "ตั้งค่าธีม": "Theme settings", "ตัดคลิปแนวตั้ง 30 วินาที ใส่ซับและเพลง": "Edit a 30-second vertical clip with subtitles and music", "ทำสไลด์ 5 หน้าเรื่อง \"งบรายเดือนของนักศึกษา\"": "Make 5 slides on \"A student's monthly budget\"", "ออกแบบโปสเตอร์ A4 โปรโมตร้านขนม": "Design an A4 poster promoting a dessert shop", "ถ่ายสินค้า 3 ชิ้น ชิ้นละ 3 มุม": "Photograph 3 products, 3 angles each", "เขียนบทความ 300 คำเรื่อง \"ทำงานพิเศษระหว่างเรียน\"": "Write a 300-word article on \"Working part-time while studying\"", "อธิบายโจทย์คณิต 1 ข้อเป็นขั้นตอน": "Explain one math problem step by step", "เขียนแผนหน้าที่และเวลาของทีมงานรับน้อง 4 ชั่วโมง": "Write a duty and timing plan for a 4-hour freshman event crew", "คลิปแนวตั้งสำหรับ": "Vertical clips for", "ควรใช้สัดส่วนใด": "which aspect ratio should you use?", "จะไม่ให้เพลงกลบเสียงพูดต้องทำอย่างไร": "How do you keep music from drowning out speech?", "ลดเสียงเพลงช่วงที่มีเสียงพูด": "Lower the music while someone is speaking", "เร่งเสียงพูดให้สุด": "Turn the speech volume to the max", "ตัดเพลงทิ้งเสมอ": "Always remove the music", "สไลด์ที่อ่านง่ายควรมีข้อความแบบใด": "What kind of text makes slides easy to read?", "ย่อหน้ายาวเต็มหน้า": "Long paragraphs filling the page", "ประเด็นสั้น ๆ หน้าละหนึ่งความคิด": "Short points, one idea per slide", "ตัวอักษรเล็กหลายบรรทัด": "Small text in many lines", "การใช้สีในสไลด์ที่เหมาะสมคือ": "Good use of color in slides is", "ใช้ทุกสีให้สวย": "Use every color to look pretty", "ใช้ 2–3 สีและตัดกันชัด": "Use 2–3 colors with clear contrast", "พื้นหลังลายกับตัวอักษรสีอ่อน": "Patterned background with light text", "โปสเตอร์ควรเริ่มจัดจากอะไร": "What should you lay out first on a poster?", "หัวข้อหลักที่เด่นที่สุด": "The most prominent main headline", "รูปให้เยอะที่สุด": "As many images as possible", "ใช้ฟอนต์หลายแบบ": "Use many different fonts", "ไฟล์ส่งพิมพ์ควรใช้โหมดสีใด": "Which color mode should print files use?", "ขาวดำเท่านั้น": "Black and white only", "เท่านั้น": "only", "ถ่ายสินค้าให้ชัดควรเน้นอะไร": "What should you focus on for sharp product photos?", "แสงสม่ำเสมอ พื้นหลังเรียบ": "Even lighting and a plain background", "ใช้แฟลชตรง ๆ เสมอ": "Always use direct flash", "ถ่ายย้อนแสงทุกครั้ง": "Always shoot against the light", "กฎสามส่วนใช้ทำอะไร": "What is the rule of thirds used for?", "จัดองค์ประกอบภาพ": "Composing the image", "เพิ่มความไวชัตเตอร์": "Increasing shutter speed", "ลดสัญญาณรบกวน": "Reducing noise", "หัวข้อบทความที่ดีเป็นอย่างไร": "What makes a good article headline?", "ยาวและคลุมเครือ": "Long and vague", "ตรงประเด็นและบอกประโยชน์": "On point and states the benefit", "พิมพ์ใหญ่ทั้งหมด": "All caps", "ก่อนส่งงานเขียนควรทำอะไร": "What should you do before submitting writing?", "ตรวจคำผิดและข้อเท็จจริง": "Check typos and facts", "ส่งทันทีไม่อ่านซ้ำ": "Send immediately without rereading", "เพิ่มคำให้ยาวขึ้น": "Add words to make it longer", "น้องไม่เข้าใจโจทย์ ควรทำอย่างไร": "The student doesn't understand the problem. What should you do?", "เฉลยคำตอบทันที": "Give the answer right away", "ถามว่าติดตรงไหนแล้วสอนทีละขั้น": "Ask where they are stuck, then teach step by step", "ข้ามไปโจทย์ใหม่": "Skip to a new problem", "แผนติว 2 ชั่วโมงที่ดีคือ": "A good 2-hour tutoring plan is", "สอนต่อเนื่องไม่หยุด": "Teach non-stop", "แบ่งสอน ทำโจทย์ และสรุป": "Split into teaching, practice and summary", "ให้ทำแบบฝึกหัดอย่างเดียว": "Only give exercises", "ถึงงานแล้วควรทำอะไรก่อน": "On arrival, what should you do first?", "รับหน้าที่และจุดประจำกับหัวหน้า": "Get your duties and post from the lead", "เดินดูงานตามสบาย": "Wander around casually", "รอให้มีคนเรียก": "Wait to be called", "พบปัญหาหน้างานควรทำอย่างไร": "What should you do when a problem comes up on site?", "แก้เองเงียบ ๆ": "Fix it quietly yourself", "แจ้งหัวหน้าทีมทันทีพร้อมเสนอทางแก้": "Tell the team lead right away and suggest a fix", "รอจนกิจกรรมจบ": "Wait until the event ends", "ตัดคลิปสั้น": "Short clip edit", "ออกแบบโปสเตอร์": "Poster design", "ทำสไลด์นำเสนอ": "Presentation slides", "ตัดคลิป": "Video editing", "ทำสไลด์": "Slides", "ออกแบบ": "Design", "ถ่ายภาพ": "Photography", "เขียนบทความ": "Writing", "ติวหนังสือ": "Tutoring", "ช่วยงานกิจกรรม": "Event help", "ยังไม่มี": "None yet", "เพิ่งเริ่ม": "Beginner", "พอทำได้": "Intermediate", "ชำนาญ": "Expert", "ระดับ": "Level", "หางาน": "Jobs", "ตารางเรียน": "Schedule", "ประเมิน": "Assess", "ทดสอบ": "Test", "งานจริง": "Real job", "เช้า": "morning", "บ่าย": "afternoon", "เย็น": "evening", "ค่ำ": "night", " และ ": " and ", "และ": "and", "เพิ่มผลงานแล้ว": "Work added", " คน": " people", "ผู้ว่าจ้าง": "employer", "ลงมือทำจริง": "Real work", "ความเห็นเพื่อน": "Peer feedback", "การเงิน": "Money", "บริหารเงิน": "Money plan", "งบเดือนนี้": "Monthly budget", "ใช้ได้วันละ": "Can spend per day", "เหลือเก็บ": "Left over", "เป้ารายได้/เดือน": "Income goal/month", "เป้ารายได้": "Income goal", "ขาดอีก": "Still needed", "หางานเพิ่ม": "Find more work", "งานที่ทำได้วันนี้": "Jobs you can do today", "ดูงานทั้งหมด": "See all jobs", "เวลาว่าง": "Free time", "ทำงานแล้วได้": "Earn if you work", "สมัคร": "Apply", "รอผล": "Pending", "จบงาน": "Finish job", "ระดับไม่ถึง": "Level too low", "ขึ้นระดับ": "Level up", "ทำไมแนะนำ": "Why recommended", "รายงานประกาศนี้เพราะ": "Report this post because", "ขอเงินก่อนทำงาน": "Asks for money first", "ข้อมูลไม่ตรงความจริง": "Information is untrue", "ผู้ว่าจ้างน่าสงสัย": "Suspicious employer", "ตั้งงบและเป้าหมาย": "Set budget and goal", "งบ/เดือน": "Budget/month", "บันทึกงบและเป้าหมายแล้ว": "Budget and goal saved", "วันนี้ไม่มีงานที่เวลาตรง": "No jobs that fit your time today", "ให้คะแนนงานนี้ (เดโม)": "Rate this job (demo)", " · เพิ่มรายได้": " · income added:", "แตะเพื่อสลับ เรียน/ว่าง": "Tap to switch Class/Free", "เสร็จแล้ว": "Done", "ยังไม่มีรายการในช่วงนี้": "No entries in this period yet", "ชุมชน Daywork": "Daywork community", "ชุมชนเตือน": "Community warning", "ชุมชน": "Community", "ตารางเวลาของฉัน": "My schedule", "ชนตารางเวลา": "Clashes with your schedule", "ตารางเวลา": "Schedule", "ฉันคือ": "I am", "นักเรียน/นักศึกษา": "Student", "คนทำงานประจำ": "Employed", "แตะช่องเพื่อสลับว่าง/ไม่ว่าง": "Tap a cell to switch free/busy", "ของวันนี้ไม่ว่างหรือเวลาว่างไม่พอ": "slot today is busy or there is not enough free time", "ลงประกาศหาคน": "Post a job", "ชื่องาน": "Job title", "ทักษะที่ต้องการ": "Skill needed", "ระดับขั้นต่ำ": "Minimum level", "ช่วงเวลาทำงาน": "Work time", "ค่าจ้าง (฿)": "Pay (฿)", "จำนวนชั่วโมง": "Hours", "รายละเอียด": "Details", "ลงประกาศแล้ว งานจะขึ้นในรายการหางาน": "Posted. Your job now appears in the job list", "ลงประกาศ:": "New job:", "ลงประกาศ": "Publish", "โพสต์โดยคุณ": "Posted by you", "คุณ (ผู้ลงประกาศ)": "You (poster)", "ลบประกาศแล้ว": "Post deleted", "ลบประกาศ": "Delete post", "ท้าออมเงิน 30 วัน": "30-day saving challenge", "คนร่วมท้า": "joined", "เข้าร่วมท้าออมเงินแล้ว": "Joined the saving challenge", "เข้าร่วมแล้ว": "Joined", "เข้าร่วม": "Join", "เป้าออม": "Saving goal", "เตือนภัยงานหลอก": "Scam alerts", "คนรายงาน": "reports", "เขียนอะไรถึงชุมชน": "Write to the community", "โพสต์แล้ว": "Posted", "โพสต์": "Post", "เคล็ดลับ": "Tip", "ถามตอบ": "Q&A", "รีวิวงาน": "Job review", "หาเพื่อนทำงาน": "Find a work buddy", "ลงงานใหม่": "New job", "หมวด": "Category", "ว่างตรงไหน หาเงินตรงนั้น": "Free time here, money there", "เหมาะกับทุกคนที่อยากมีรายได้เสริม": "For anyone who wants extra income", "บอกเวลาว่าง": "Set free time", "เลือกงานที่พอดี": "Pick a fitting job", "เห็นเงินเข้า": "See money come in", "งานบริการ": "Service work", "ลูกค้าบ่นว่าอาหารช้า ควรทำอย่างไร": "A customer complains the food is slow. What should you do?", "ขอโทษ ตรวจสอบเวลาและแจ้งให้ลูกค้าทราบ": "Apologize, check the timing and update the customer", "เถียงกลับ": "Argue back", "เมินและทำงานต่อ": "Ignore it and keep working", "ก่อนเริ่มกะควรทำอะไร": "What should you do before a shift starts?", "เตรียมของและเช็กหน้าที่ของกะ": "Prepare supplies and check your duties", "รอให้มีลูกค้าก่อน": "Wait for customers first", "เล่นโทรศัพท์": "Use your phone", "เขียนขั้นตอนต้อนรับและรับออเดอร์ลูกค้า 5 ขั้น": "Write a 5-step routine for greeting customers and taking orders", "ช่วยขายของตลาดนัดสุดสัปดาห์": "Help sell at the weekend market", "แม่ค้าตลาดนัด": "Market vendor", "ยืนขายและทอนเงิน": "Stand, sell and give change", "เสิร์ฟอาหารช่วงเย็น": "Serve food in the evening", "ร้านอาหารครัวบ้านสวน": "Baan Suan Kitchen restaurant", "มีอาหารเย็นให้": "Dinner provided", "แพ็คของออนไลน์": "Pack online orders", "ร้านค้าออนไลน์ใกล้บ้าน": "Online shop nearby", "ทำที่ร้าน ไม่ต้องใช้ประสบการณ์": "Done at the shop, no experience needed", "ทดลองงาน: แพ็คของ 20 ชิ้น": "Trial: pack 20 items", "พี่ส้ม": "P'Som", "น้องบีม": "Beam", "คุณแม่ปลา": "Pla (mom)", "พี่โอม": "P'Ohm", "ตัดคลิป 2 ชม. ได้ 600 ฿ เก็บค่าเทอมได้ไว": "Edited clips for 2 h, earned 600 ฿, saving for tuition fast", "งานแพ็คของช่วงเย็นมีใครเคยทำบ้าง?": "Has anyone done evening packing jobs?", "ขายของตลาดนัดเสาร์-อาทิตย์ ได้เงินสด ผู้ว่าจ้างใจดี": "Weekend market selling, paid in cash, kind employer", "หาเพื่อนไปช่วยงานรับน้อง วันเสาร์ 2 คน": "Looking for 2 friends to help at the freshmen event on Saturday", "เป้าสัปดาห์นี้": "This week's goal", "เป้าสัปดาห์ (฿)": "Weekly goal (฿)", "เป้าสัปดาห์": "Weekly goal", "ได้แล้ว": "Earned so far", "ถึงเป้าแล้ว": "Goal reached", "เวลาว่างหรือระดับทักษะยังไม่พอถึงเป้า": "Free time or skill level is not enough to reach the goal", "ยังขาด": "short by", "สมัครทั้งชุด": "Apply to all", "เปิดเวลาว่าง": "Open up free time", "ถึงเป้าใน": "reach the goal in", "เหลือ": "only", "เร็วขึ้น": "faster by", "ตั้งเป้าสัปดาห์": "Set weekly goal", "ตั้งจากเป้าเดือน": "Set from monthly goal", "สมัครงานในแผนแล้ว": "Applied to the jobs in your plan", "บันทึกเป้าสัปดาห์แล้ว": "Weekly goal saved", "อยู่ในแผนสัปดาห์": "In your weekly plan", "จบงานแล้ว:": "Finished:", " · ปลดล็อกงาน": " · jobs unlocked:", "จันทร์": "Monday", "อังคาร": "Tuesday", "พุธ": "Wednesday", "พฤหัส": "Thursday", "ศุกร์": "Friday", "เสาร์": "Saturday", "อาทิตย์": "Sunday", "หน้าแรก": "Home", "เพิ่มเติม": "More", "ออมไม่พอเพราะรายได้ไม่พอ?": "Not saving enough because income is short?", "บอกว่าขาดเท่าไร ต้องทำกี่ชั่วโมง งานอะไร": "tells you how much you are short, how many hours to work and which jobs", "เดือนนี้ขาด": "Short this month", "ต้องทำ (สัปดาห์นี้)": "To work (this week)", "งานที่เหมาะ": "Fitting jobs", "แผนสัปดาห์นี้": "This week's plan", "ถึงเป้าเดือนนี้แล้ว": "Monthly goal reached", "ดูรายการ": "View entries", "ทักษะและระดับ": "Skills and levels", "โพสต์ เตือนภัย ท้าออมเงิน": "Posts, scam alerts, saving challenge", "ทดสอบ ลองทำ งานจริง": "Test, trial, real job", "บัญชีรายรับ-รายจ่าย": "Income & expense log", "งบ รายการ สรุป": "Budget, entries, summary", "ขาว/มืด สีหลัก ตาบอดสี Zoom": "Light/dark, accent color, color-blind, Zoom", "ภาษา / Language": "Language", "ไทย · English": "Thai · English", "ต้องหา": "To earn", "เวลาว่าง = เงิน": "Free time = money", "ว่างสัปดาห์นี้": "Free this week", "ทำได้": "Can earn", "แตะเพื่อสลับ": "Tap to switch", "สแกนเงินสด": "Scan cash", "ถ่ายรูปเงิน": "Photograph cash", "กำลังอ่านรูป…": "Reading the photo…", "ธนบัตร": "Banknote", "เหรียญ": "Coin", "รวม": "Total", "ที่มาของเงิน": "Source of money", "ในแอป": "In-app", "นอกแอป": "Outside app", "ค่าจ้างจากงานใน Daywork": "Pay from jobs through Daywork", "เงินจากที่อื่น": "Money from elsewhere", "เลือกที่มาของเงินก่อนบันทึก": "Choose the source of the money before saving", "AI อ่านผิดได้ ตรวจจำนวนก่อนบันทึก": "AI can misread. Check the counts before saving", "ต้องอนุญาตให้ Claude อ่านรูป นับเองได้ด้านล่าง": "Allow Claude to read the photo, or count by hand below", "อ่านรูปไม่ได้ที่นี่ นับเองได้ด้านล่าง": "Photo reading is not available here. Count by hand below", "อ่านรูปไม่สำเร็จ ลองใหม่หรือนับเอง": "Could not read the photo. Try again or count by hand", "บันทึกเป็นเงินจากในแอป": "Saved as money from inside the app", "บันทึกเป็นเงินจากนอกแอป": "Saved as money from outside the app", "เงินสดจากงานในแอป": "Cash from jobs in the app", "เงินสดนอกแอป": "Cash outside the app", "ใส่จำนวนเงินก่อนบันทึก": "Add an amount before saving", "บัญชี": "Ledger", "กระเป๋า": "Pockets", "เงินที่ยังไม่แบ่ง": "Unallocated", "สร้างกระเป๋า": "New pocket", "ชื่อกระเป๋า": "Pocket name", "ใช้จ่าย": "Spending", "เป้าหมาย": "Goal", "ออมสม่ำเสมอ": "Regular saving", "ยอดเป้าหมาย (฿)": "Goal amount (฿)", "ภายในกี่สัปดาห์": "Within how many weeks", "ออมครั้งละ (฿)": "Save each time (฿)", "แบ่งอัตโนมัติจากงาน (%)": "Auto-split from job pay (%)", "ย้ายเข้า": "Add money", "ย้ายออก": "Take out", "ปลดล็อก": "Unlock", "ล็อก": "Lock", "ชวนเพื่อน": "Invite a friend", "ลบกระเป๋า": "Delete pocket", "/สัปดาห์": "/week", "ครั้ง": "times", "ออมเลย": "Save now", "เงินในกระเป๋าไม่พอ": "Not enough in the pocket", "เงินที่ยังไม่แบ่งไม่พอ": "Not enough unallocated money", "กระเป๋านี้ล็อกอยู่": "This pocket is locked", "สร้างกระเป๋าแล้ว": "Pocket created", "ย้ายเงินแล้ว": "Money moved", "เพิ่มเพื่อนแล้ว": "Friend added", "ลบกระเป๋าแล้ว": "Pocket deleted", "ใส่ชื่อกระเป๋า": "Enter a pocket name", " · แบ่งเข้ากระเป๋า": " · to pockets:", "ค่าเทอม": "Tuition", "เงินฉุกเฉิน": "Emergency fund", "ค่าใช้จ่ายรายสัปดาห์": "Weekly spending", "ไอคอน": "Icon", "สรุป": "Summary", "เดือนนี้": "This month", "รายจ่ายตามหมวด": "Spending by category", "จำเป็น": "Essential", "ไม่จำเป็น": "Non-essential", "ตามหมวด": "By category", "จำเป็นหรือไม่": "Essential or not", "อาหาร": "Food", "เดินทาง": "Transport", "ที่พัก": "Housing", "เรียน/อุปกรณ์": "Study", "ช้อปปิ้ง": "Shopping", "บันเทิง": "Fun", "ครอบครัว": "Family", "กยศ.": "Student loan (KYS)", "พาร์ทไทม์": "Part-time", "วิเคราะห์การใช้จ่าย": "Spending insights", "ใช้มากสุด:": "Top spending:", "ใช้เฉลี่ยวันละ": "Daily average", "ลดได้": "can cut", "ใช้เงินจำเป็นเป็นหลัก": "mostly essential spending", "สัปดาห์นี้": "This week", "จากสัปดาห์ก่อน": "vs last week", "รายได้ตามที่มา": "Income by source", "เกินงบแล้ว": "Over budget", "ใช้ไป": "Used", "ของงบ": "of budget", "เหลืองบ": "Budget left", "ทำได้เพิ่ม": "extra possible", "ใช้ไป 80% ของงบแล้ว": "80% of budget used", "เพิ่มรายได้": "Earn more", "ชานมไข่มุกกับเพื่อน": "Bubble tea with friends", "ดูหนังกับเพื่อน": "Movie with friends", "ค่าอุปกรณ์การเรียน": "Study supplies", "ซื้อเสื้อ": "Bought a shirt", "เงินจากครอบครัว": "Money from family", "วิเคราะห์": "Insights", "ที่มารายได้": "Income sources", "เมนูการเงิน": "Finance menu"};
+const EX={"จ.": "Mon", "อ.": "Tue", "พ.": "Wed", "พฤ.": "Thu", "ศ.": "Fri", "ส.": "Sat", "อา.": "Sun", "เรียน": "Class", "ว่าง": "Free", "เช้า": "Morning", "บ่าย": "Afternoon", "เย็น": "Evening", "ค่ำ": "Night", "ปิด": "Close", "ขาว": "Light", "มืด": "Dark", "ตามเครื่อง": "Follow device", "ปกติ": "Normal", "ใหญ่": "Large", "ใหญ่มาก": "Extra large", "น้ำเงิน": "Blue", "เขียว": "Green", "ม่วง": "Purple", "ส้ม": "Orange", "สีน้ำเงิน": "Blue", "สีเขียว": "Green", "สีม่วง": "Purple", "สีส้ม": "Orange", "รายงาน": "Report", "ปิดใช้งาน": "Off", "เปิดใช้งาน": "On", "ขนาด": "Size", "5 ตรงมาก": "5 Very fit", "4 ตรง": "4 Fit", "3 พอใช้": "3 Okay", "2 ไม่ค่อยตรง": "2 Not very fit", "1 ไม่ตรงเลย": "1 Not fit at all", "5 ดีมาก": "5 Excellent", "4 ดี": "4 Good", "2 ควรปรับปรุง": "2 Needs work", "1 ยังไม่ผ่าน": "1 Not passed", "ลองทำ": "Trial", "ทดสอบ": "Test", "งานจริง": "Real job", "ขอให้เพื่อนรับรอง": "Ask friends to endorse", "คน": "people", "ทำงานประจำ": "Work", "ติดธุระ": "Busy", "อื่น ๆ": "Other", "คุณ": "You"};
+const TRK=Object.keys(TR).sort((a,b)=>b.length-a.length);
+let lang='th';try{lang=localStorage.getItem('dwlang')||'th'}catch(e){}
+function tr(t){if(lang!=='en'||!/[ก-๙]/.test(t))return t;const k=t.trim();if(EX[k]!==undefined)return t.replace(k,EX[k]);let o=t;for(const key of TRK)if(o.includes(key))o=o.split(key).join(TR[key]);return o}
+function localize(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[aria-label],[placeholder],[title]').forEach(el=>{['aria-label','placeholder','title'].forEach(a=>{
+    if(!el.hasAttribute(a))return;const k='data-th-'+a;
+    if(!el.hasAttribute(k)){if(/[ก-๙]/.test(el.getAttribute(a)))el.setAttribute(k,el.getAttribute(a));else return}
+    el.setAttribute(a,lang==='en'?tr(el.getAttribute(k)):el.getAttribute(k))})});
+  if(lang==='en'){const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+    while(n=w.nextNode()){if(n.parentNode.tagName==='SCRIPT')continue;const v=tr(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}}
+  const lt=document.getElementById('langTxt');if(lt)lt.textContent=lang==='th'?'EN':'ไทย';
+}
+const ACC={'น้ำเงิน':['#3b5bfd','#f1f3ff','#7b96ff','#1d2748'],'เขียว':['#0f9d6b','#e8f8f1','#38c996','#10322a'],'ม่วง':['#7c4dff','#f3eeff','#a285ff','#251b4a'],'ส้ม':['#e8650c','#fff1e6','#ff9145','#3a2210']};
+const theme={mode:'auto',accent:'น้ำเงิน',open:false,cb:false,zoom:1};
+try{Object.assign(theme,JSON.parse(localStorage.getItem('dwtheme')||'{}'),{open:false})}catch(e){}
+function applyTheme(){
+  const dark=theme.mode==='dark'||(theme.mode==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);
+  const r=document.documentElement,a=theme.cb?ACC['น้ำเงิน']:(ACC[theme.accent]||ACC['น้ำเงิน']);
+  r.setAttribute('data-cb',theme.cb?'1':'0');r.style.zoom=theme.zoom;
+  r.setAttribute('data-theme',dark?'dark':'light');
+  r.style.setProperty('--pri',dark?a[2]:a[0]);r.style.setProperty('--pri-soft',dark?a[3]:a[1]);
+  try{localStorage.setItem('dwtheme',JSON.stringify({mode:theme.mode,accent:theme.accent,cb:theme.cb,zoom:theme.zoom}))}catch(e){}
+}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(theme.mode==='auto')applyTheme()})}catch(e){}
+function hintCard(){return `<div class="hint"><b>ลองกดเล่นได้เลย</b><p class="mute">กดปุ่มจานสีวงกลมมุมขวาบน เพื่อเปลี่ยนโหมดขาว/มืด เปลี่ยนสีหลัก ใช้โหมดตาบอดสี หรือขยายตัวอักษร (Zoom) แล้วดูผลทั้งแอปทันที</p><button class="btn sm" data-themeopen="1" style="margin-top:6px">ลองเลย</button></div>`}
+function themePanel(){return `<div class="card"><div class="row"><b>ธีมและการเข้าถึง</b><span><button class="btn sm ghost" data-treset="1">รีเซ็ต</button> <button class="btn sm" data-themeopen="1">ปิด</button></span></div>
+  <p class="mute">โหมดสี</p><div class="chips" role="group" aria-label="โหมดสี">${[['light','ขาว'],['dark','มืด'],['auto','ตามเครื่อง']].map(([k,l])=>`<button class="chip ${theme.mode===k?'on':''}" data-tmode="${k}">${l}</button>`).join('')}</div>
+  <p class="mute">สีหลัก${theme.cb?' (โหมดตาบอดสีใช้สีน้ำเงินคงที่)':''}</p><div class="chips" role="group" aria-label="สีหลัก">${Object.keys(ACC).map(k=>`<button class="sw ${theme.accent===k?'on':''}" style="background:${ACC[k][0]}" data-accent="${k}" aria-label="สี${k}" ${theme.cb?'disabled style="opacity:.4"':''}></button>`).join('')}</div>
+  <p class="mute">โหมดตาบอดสี (ไม่แยกแค่แดง-เขียว ใช้สีน้ำเงิน-ส้มและเครื่องหมาย ✓ ! ✕ ช่วย)</p><div class="chips" role="group" aria-label="โหมดตาบอดสี">${[[false,'ปิดใช้งาน'],[true,'เปิดใช้งาน']].map(([k,l])=>`<button class="chip ${theme.cb===k?'on':''}" data-tcb="${k}" aria-pressed="${theme.cb===k}">${l}</button>`).join('')}</div>
+  <p class="mute">ขนาดตัวอักษรและหน้าจอ (Zoom)</p><div class="chips" role="group" aria-label="ขนาด">${[[1,'ปกติ'],[1.25,'ใหญ่'],[1.5,'ใหญ่มาก']].map(([k,l])=>`<button class="chip ${theme.zoom===k?'on':''}" data-tzoom="${k}" aria-pressed="${theme.zoom===k}">${l}</button>`).join('')}</div></div>`}
+function render(){
+  applyTheme();document.getElementById('themeSlot').innerHTML=theme.open?themePanel():'';
+  const SUB=['community','assess','recent'],sub=SUB.includes(state.tab),act=sub?'more':state.tab;
+  const v=(sub?'<button class="chip" data-go="more" style="margin-bottom:10px">‹ เพิ่มเติม</button>':'')+{pockets:viewPockets,recent:viewRecent,home:viewHome,jobs:viewJobs,schedule:viewSchedule,more:viewMore,assess:viewAssess,ledger:viewMoney,community:viewCommunity}[state.tab]();
+  document.getElementById('main').innerHTML=v;
+  document.getElementById('nav').innerHTML=TABS.map(([k,l])=>`<button class="${act===k?'on':''}" data-tab="${k}" ${act===k?'aria-current="page"':''}>${ic(ICONS[k],22)}${l}</button>`).join('');
+  document.getElementById('balTop').textContent='คงเหลือ '+fmt(netAll())+' ฿';
+  localize();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.tab){state.tab=d.tab;scrollTo(0,0)}
+  else if(d.go){state.tab=d.go;scrollTo(0,0)}
+  else if(d.day){state.day=+d.day}
+  else if(d.period){state.period=d.period}
+  else if(d.cell){const[a,c]=d.cell.split(',').map(Number);state.busy[a][c]=!state.busy[a][c]}
+  else if(d.apply){state.applied.add(+d.apply);toast('สมัครงานแล้ว รอผู้ว่าจ้างตอบกลับ')}
+  else if(d.report){state.reported.add(+d.report);toast('ส่งรายงานให้ทีมตรวจสอบแล้ว')}
+  else if(d.mmopen){state.open={t:'mm',id:+d.mmopen}}
+  else if(d.rate){state.open={t:'rate',id:+d.rate}}
+  else if(d.mm){const[id,r]=d.mm.split(',');const j=JOBS.find(x=>x.id==id);state.hidden.add(+id);state.open=null;
+    if(r==='ยากเกินไป'){toast('รับทราบ ไปทำขั้นต่อไปในบันไดทักษะเพื่อขึ้นระดับ')}
+    else if(r==='ไม่ใช่ทักษะนี้'){state.avoid.add(j.skill);toast('จะแนะนำงานแนว '+j.skill+' น้อยลง')}
+    else toast('รับทราบ จะเลือกงานที่เวลาลงตัวกว่านี้')}
+  else if(d.delp!==undefined){state.portfolio.splice(+d.delp,1)}
+  else if(d.themeopen){theme.open=!theme.open;theme.seen=true;scrollTo(0,0)}
+  else if(d.treset){theme.mode='auto';theme.accent='น้ำเงิน';theme.cb=false;theme.zoom=1}
+  else if(d.tmode){theme.mode=d.tmode}
+  else if(d.accent){theme.accent=d.accent}
+  else if(d.tcb){theme.cb=d.tcb==='true'}
+  else if(d.tzoom){theme.zoom=+d.tzoom}
+  else if(d.astep){const k=d.astep,n=nextStep(k);state.askill=k;if(n.m==='emp'){state.tab='jobs';toast('สมัครงานที่ตรงระดับ จบงานแล้วกด "จบงานแล้ว ให้คะแนน"')}else{state.method=n.m;state.assessOpen=true}scrollTo(0,0)}
+  else if(d.climb){state.askill=d.climb;state.tab='assess';const n=nextStep(d.climb);if(n&&n.m!=='emp'){state.method=n.m;state.assessOpen=true}scrollTo(0,0)}
+  else if(d.aclose){state.assessOpen=false}
+  else if(d.lang){lang=lang==='th'?'en':'th';try{localStorage.setItem('dwlang',lang)}catch(e){}}
+  else if(d.lsec){state.lsec=state.lsec===d.lsec?null:d.lsec}
+  else if(d.pknew){state.pk.create=!state.pk.create}
+  else if(d.pkadd){state.pk={create:false,id:+d.pkadd,act:'add'}}
+  else if(d.pkout){state.pk={create:false,id:+d.pkout,act:'out'}}
+  else if(d.pkspend){state.pk={create:false,id:+d.pkspend,act:'spend'}}
+  else if(d.pkshare){state.pk={create:false,id:+d.pkshare,act:'share'}}
+  else if(d.pklock){const p=state.pockets.find(x=>x.id==d.pklock);p.locked=!p.locked}
+  else if(d.pkdel){const k=state.pockets.findIndex(x=>x.id==d.pkdel);if(k>=0&&state.pockets[k].locked){toast('กระเป๋านี้ล็อกอยู่')}else{state.pockets.splice(k,1);toast('ลบกระเป๋าแล้ว')}}
+  else if(d.pksave){const p=state.pockets.find(x=>x.id==d.pksave);if(unalloc()<p.step){toast('เงินที่ยังไม่แบ่งไม่พอ')}else{p.bal+=p.step;p.streak++;toast('ย้ายเงินแล้ว')}}
+  else if(d.scanopen){state.scan.open=true}
+  else if(d.scanclose){state.scan.open=false}
+  else if(d.scanhome){state.tab='ledger';state.scan.open=true;scrollTo(0,0)}
+  else if(d.den){const[k,dl]=d.den.split(',');const c=state.scan.counts;c[k]=Math.max(0,Math.min(99,(c[k]||0)+(+dl)))}
+  else if(d.scansrc){state.scan.src=d.scansrc}
+  else if(d.scansave){const T=scanTotals(),sc=state.scan;if(T.all<=0){toast('ใส่จำนวนเงินก่อนบันทึก')}else if(!sc.src){toast('เลือกที่มาของเงินก่อนบันทึก')}else{state.income.unshift({d:0,t:'in',n:sc.src==='in'?'เงินสดจากงานในแอป':'เงินสดนอกแอป',a:T.all,h:0,src:sc.src,cat:sc.src==='in'?'part':'oth'});toast(sc.src==='in'?'บันทึกเป็นเงินจากในแอป':'บันทึกเป็นเงินจากนอกแอป');state.scan={open:false,st:'idle',img:null,counts:{},src:null,err:''}}}
+  else if(d.applyplan){const n=weekPlan(undefined,homeTarget()).picks;n.forEach(x=>state.applied.add(x.j.id));toast('สมัครงานในแผนแล้ว')}
+  else if(d.wkfrom){const now=new Date(),dl=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()+1;state.weekGoal=Math.max(100,Math.ceil(Math.max(0,state.goal-monthIncome())/Math.max(1,Math.ceil(dl/7))));toast('บันทึกเป้าสัปดาห์แล้ว')}
+  else if(d.role){state.role=d.role}
+  else if(d.join){state.joined=true;toast('เข้าร่วมท้าออมเงินแล้ว')}
+  else if(d.like){const i=+d.like;state.liked.has(i)?state.liked.delete(i):state.liked.add(i)}
+  else if(d.postopen){state.postOpen=!state.postOpen}
+  else if(d.delpost){const k=JOBS.findIndex(x=>x.id==d.delpost);if(k>=0)JOBS.splice(k,1);toast('ลบประกาศแล้ว')}
+  else if(d.repopen){state.open={t:'rep',id:+d.repopen}}
+  else if(d.rep){const[id]=d.rep.split(',');if(!state.reported.has(+id)){const jb=JOBS.find(x=>x.id==id),al=state.alerts.find(x=>x.t===jb.t);if(al)al.n++;else state.alerts.push({t:jb.t,n:1})}state.reported.add(+id);state.open=null;toast('ส่งรายงานให้ทีมตรวจสอบแล้ว')}
+  else if(d.areset){state.evid={};state.qans={};state.rated=new Set();state.assessOpen=false;toast('รีเซ็ตผลทดสอบและคะแนนทั้งหมดเป็นศูนย์แล้ว')}
+  else if(d.peeropen){state.askill=d.peeropen;state.method='peer';state.assessOpen=true;scrollTo(0,0)}
+  else if(d.askill){state.askill=d.askill}
+  else if(d.method){state.method=d.method}
+  else if(d.qa){const[i,o]=d.qa.split(',').map(Number);(state.qans[state.askill]=state.qans[state.askill]||{})[i]=o}
+  else if(d.qsubmit){const sk=state.askill,a=state.qans[sk]||{};
+    if(Object.keys(a).length<Q[sk].length){toast('ตอบให้ครบทุกข้อก่อนส่ง');return}
+    const q=Math.round(Q[sk].filter((q,i)=>a[i]===q[4]).length/Q[sk].length*100);E(sk).quiz=Math.max(E(sk).quiz||0,q);state.qans[sk]={};
+    if(q>=100){toast('ผ่านแล้ว! ระดับ '+sk+' เป็น'+LV[eff(sk)]+' · ปลดล็อกงาน '+unl(sk));state.assessOpen=false}else toast('ได้ '+q+'% ต้องตอบถูกทุกข้อ ลองใหม่ได้')}
+  else return;
+  render();
+});
+document.addEventListener('submit',e=>{
+  e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+  if(e.target.id==='addForm'){const c=CATS[f.cat]||CATS.other,a0=monthOut();state.income.unshift({d:0,t:c.t,n:f.n,a:+f.a,h:+(f.h||0),cat:f.cat,src:c.t==='in'?(f.src||'out'):undefined,need:f.nd===''||f.nd===undefined?undefined:+f.nd});
+    if(c.t==='out'){const p0=Math.round(a0/state.budget*100),p1=Math.round(monthOut()/state.budget*100);toast(p1>=100&&p0<100?'เกินงบแล้ว':p1>=80&&p0<80?'ใช้ไป 80% ของงบแล้ว':'บันทึกรายการแล้ว')}else toast('บันทึกรายการแล้ว')}
+  if(e.target.id==='rateForm'){const j=JOBS.find(x=>x.id==f.jid);state.rated.add(j.id);state.open=null;const ev=+f.e;E(j.skill).emp.push(ev);
+    state.income.unshift({d:0,t:'in',n:j.t,a:j.pay,h:j.hrs,src:'in',cat:'part'});state.posts.unshift({id:Date.now()+2,a:'คุณ',c:'รีวิวงาน',t:'จบงานแล้ว: '+j.t+' (+'+fmt(j.pay)+' ฿)',l:0});let sp=0;state.pockets.filter(p=>p.auto>0).forEach(p=>{const a=Math.min(Math.floor(j.pay*p.auto/100),Math.max(0,unalloc()));p.bal+=a;sp+=a});toast('บันทึกคะแนนแล้ว ระดับ '+j.skill+' ตอนนี้: '+LV[eff(j.skill)]+' · เพิ่มรายได้ '+fmt(j.pay)+' ฿'+(sp?' · แบ่งเข้ากระเป๋า '+fmt(sp)+' ฿':''))}
+  if(e.target.id==='jobForm'){const j={id:Date.now(),t:f.t,emp:'คุณ (ผู้ลงประกาศ)',skill:f.s,lvl:+f.l,hrs:+f.h,pay:+f.p,rate:0,rev:0,ver:false,slot:+f.w,note:f.n||'',mine:true};JOBS.unshift(j);state.postOpen=false;state.posts.unshift({id:Date.now()+1,a:'คุณ',c:'ลงงานใหม่',t:'ลงประกาศ: '+j.t+' ('+fmt(j.pay)+' ฿)',l:0});toast('ลงประกาศแล้ว งานจะขึ้นในรายการหางาน')}
+  if(e.target.id==='boardForm'){state.posts.unshift({id:Date.now(),a:'คุณ',c:f.c,t:f.t,l:0});toast('โพสต์แล้ว')}
+  if(e.target.id==='pkForm'){const p=state.pockets.find(x=>x.id==f.id),v=+f.v;
+    if(f.act==='share'){if(f.n){p.members.push(f.n);toast('เพิ่มเพื่อนแล้ว')}}
+    else if(v>0){
+      if(f.act==='add'){if(v>Math.max(0,unalloc()))toast('เงินที่ยังไม่แบ่งไม่พอ');else{p.bal+=v;toast('ย้ายเงินแล้ว')}}
+      else if(p.locked)toast('กระเป๋านี้ล็อกอยู่');else if(v>p.bal)toast('เงินในกระเป๋าไม่พอ');
+      else{p.bal-=v;if(f.act==='spend')state.income.unshift({d:0,t:'out',n:p.name,a:v,h:0,src:'out'});toast('ย้ายเงินแล้ว')}}
+    state.pk={create:false,id:null,act:null}}
+  if(e.target.id==='pkNew'){if(!f.name){toast('ใส่ชื่อกระเป๋า')}else{state.pockets.push({id:Date.now(),name:f.name,type:f.type,icon:f.icon||'wallet',goal:+f.goal||0,weeks:+f.weeks||8,step:+f.step||50,streak:0,bal:0,locked:false,members:[],auto:Math.min(50,Math.max(0,+f.auto||0))});state.pk.create=false;toast('สร้างกระเป๋าแล้ว')}}
+  if(e.target.id==='wkForm'){state.weekGoal=+f.w;toast('บันทึกเป้าสัปดาห์แล้ว')}
+  if(e.target.id==='planForm'){state.budget=+f.b;state.goal=+f.g;toast('บันทึกงบและเป้าหมายแล้ว')}
+  if(e.target.id==='taskForm'){const k=state.askill;if(!stage(k).s[0]){toast('ผ่านแบบทดสอบก่อน แล้วค่อยส่งงานลองทำ')}else{const v=+f.v,x=E(k);x.task=Math.max(x.task||0,v);x.link=f.l;if(v>=4){toast('ผ่านแล้ว! ระดับ '+k+' เป็น'+LV[eff(k)]+' · ปลดล็อกงาน '+unl(k));state.assessOpen=false}else toast('ได้ '+v+'/5 ต้อง 4 ขึ้นไป ส่งใหม่ได้')}}
+  if(e.target.id==='peerForm'){const x=E(state.askill);x.peers=x.peers.filter(q=>q.n!==f.n);x.peers.push({n:f.n,v:+f.v});
+    toast('บันทึกความเห็นเพื่อนแล้ว')}
+  if(e.target.id==='portForm'){state.portfolio.push({s:f.s,t:f.t});toast('เพิ่มผลงานแล้ว')}
+  render();
+});
+render();
+</script>
+</body>
+</html>
